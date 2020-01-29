@@ -15,3 +15,4 @@ and should be copy-pasted to its project's root if you want to develop this proj
 
 This project is created using the IDE, plugins and sdk below:
 
+![alt text](https://raw.githubusercontent.com/dr0psh0t/workorderimage/master/androidstudio_used_in_this_project.png)

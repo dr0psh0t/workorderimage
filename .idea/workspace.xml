@@ -38,7 +38,7 @@
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="255">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
+              <caret line="17" column="115" selection-start-line="17" selection-start-column="115" selection-end-line="17" selection-end-column="115" />
             </state>
           </provider>
         </entry>
@@ -410,7 +410,7 @@
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
+          <caret line="17" column="115" selection-start-line="17" selection-start-column="115" selection-end-line="17" selection-end-column="115" />
         </state>
       </provider>
     </entry>
