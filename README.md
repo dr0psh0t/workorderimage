@@ -15,13 +15,10 @@ and should be copy-pasted to its project's root if you want to develop this proj
 
 This project is created using the IDE, plugins and sdk below:
 
-Android Studio
 ![Android Studio](https://raw.githubusercontent.com/dr0psh0t/workorderimage/master/androidstudio_used_in_this_project.png)
 
-Flutter and Dart plugin
 ![Flutter and Dart plugin](https://raw.githubusercontent.com/dr0psh0t/workorderimage/master/dart_flutter_plugins_used_in_this_project.png)
 
-Flutter SDK
 ![Flutter SDK](https://raw.githubusercontent.com/dr0psh0t/workorderimage/master/flutter_sdk_used_in_this_project.png)
 
 
