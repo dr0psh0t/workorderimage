@@ -8,7 +8,7 @@ import 'photo.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'jobtype.dart';
-import 'search_joborder.dart';
+//import 'search_joborder.dart';
 
 class MenuPage extends StatefulWidget {
   String customer;
@@ -39,6 +39,7 @@ class MenuPageState extends State<MenuPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text(this.widget.customer),
+        /*
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
@@ -47,7 +48,7 @@ class MenuPageState extends State<MenuPage> {
               //Navigator.pushReplacement(context, SlideRightRoute(page: SearchPage()));
             },
           ),
-        ]
+        ]*/
       ),
       body: Center(
         child: Row(

@@ -10,10 +10,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'slide_right_route.dart';
 import 'settings_page.dart';
 import 'mainpage.dart';
-/*
 import 'search_joborder.dart';
-
- */
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -22,7 +19,7 @@ class LoginScreen extends StatelessWidget {
       title: 'Login',
       home: LoginPage(),
       routes: {
-        //'/searchpage': (_) => SearchPage(),
+        '/searchpage': (_) => SearchPage(),
         '/mainpage': (_) => MainPage(),
       },
     );
@@ -160,19 +157,20 @@ class LoginPageState extends State<LoginPage> {
                       child: Text('Login', style: TextStyle(color: Colors.white),),
                     ),
                     onPressed: () {
-                      String username =controllerUsername.text;
-                      String password =controllerPassword.text;
-
-                      if (password.isEmpty) {
+                      if (controllerPassword.text.isEmpty) {
                         return getDialog('Password is required.');
                       }
 
-                      var params = {
-                        'username':username,
-                        'password':password,
-                      };
-
-                      login(params);
+                      return login({
+                        'username': controllerUsername.text,
+                        'password': controllerPassword.text,
+                      }).then((map) {
+                        if (map['success']) {
+                          Navigator.of(context).pushReplacementNamed('/mainpage');
+                        } else {
+                          showSnackbar(map['reason'], 'OK', false);
+                        }
+                      });
                     },
                   ),
                 ),
@@ -191,6 +189,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   TextEditingController _settingsController = TextEditingController();
+
   displayDialog(BuildContext context) async {
     return showDialog(
       context: context,
@@ -236,10 +235,15 @@ class LoginPageState extends State<LoginPage> {
     await prefs.setString("sessionId", sessionId);
   }
 
-  Future<void> login(var params) async {
+  Future<Map> login(var params) async {
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
+
+    var returnMap = new Map();
+    returnMap['success'] = false;
 
     try {
       setState(() { _saving = true; });
@@ -253,38 +257,41 @@ class LoginPageState extends State<LoginPage> {
       String cookie = response.headers['set-cookie'];
 
       if (response == null) {
-        showSnackbar('Unable to create response object. Cause: null.', 'OK', false);
         setState(() { _saving = false; });
+
+        returnMap['reason'] = 'No response received. Cause: null.';
       } else if (response.statusCode == 200) {
         setState(() { _saving = false; });
 
         var result = json.decode(response.body);
 
+        returnMap['success'] = result['success'];
+        returnMap['reason'] = result['reason'];
+
         if (result['success']) {
           int start = cookie.indexOf('=')+1;
           int end = cookie.indexOf(';');
 
-          saveCredentials(
-            controllerUsername.text,
-            controllerPassword.text,
-            cookie.substring(start, end),
-          );
-          Navigator.of(context).pushReplacementNamed('/mainpage');
-        } else {
-          showSnackbar(result['reason'], 'OK', false);
+          saveCredentials(controllerUsername.text, controllerPassword.text,
+            cookie.substring(start, end),);
         }
       } else {
-        showSnackbar('Status code is not ok.', 'OK', false);
         setState(() { _saving = false; });
+
+        returnMap['reason'] = 'Status code is not OK.';
       }
+
+      return returnMap;
     } catch (e) {
       setState(() { _saving = false; });
+
       if (e.runtimeType.toString() == 'SocketException') {
-        showSnackbar('Unable to create connection to the server.', 'OK', false);
+        returnMap['reason'] = 'Unable to create connection to the server.';
       } else {
-        print(e.toString());
-        showSnackbar(e.toString(), 'OK', false);
+        returnMap['reason'] = e.toString();
       }
+
+      return returnMap;
     }
   }
 

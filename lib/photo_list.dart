@@ -31,7 +31,6 @@ class PhotoListPage extends StatefulWidget {
   PhotoListState createState() => new PhotoListState(this.photos, this.len);
 }
 
-
 class PhotoListState extends State<PhotoListPage> {
   File file;
   int contentSize;
@@ -136,15 +135,18 @@ class PhotoListState extends State<PhotoListPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Photos'),
+        /*
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search),
             onPressed: () {
+              Navigator.of(context).pop();
               //Navigator.push(context, SlideRightRoute(page: SearchPage()));
-              //Navigator.pushReplacement(context, SlideRightRoute(page: SearchPage()));
+
+              Navigator.pushReplacement(context, SlideRightRoute(page: SearchPage()));
             },
           ),
-        ],
+        ],*/
       ),
       body: ListView.separated(
         itemCount: len,
@@ -159,9 +161,7 @@ class PhotoListState extends State<PhotoListPage> {
           );
         },
         padding: EdgeInsets.only(top: 10.0),
-        separatorBuilder: (context, index) => Divider(
-          color: Colors.black26,
-        ),
+        separatorBuilder: (context, index) => Divider(color: Colors.black26,),
       ),
       floatingActionButton: FloatingActionButton.extended(
         icon: Icon(Icons.file_upload),
@@ -212,8 +212,9 @@ class PhotoListState extends State<PhotoListPage> {
     return '';
   }
 
-  Future<String> reloadPhotos(var params) async {
+  Future<void> reloadPhotos(var params) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
@@ -258,7 +259,7 @@ class PhotoListState extends State<PhotoListPage> {
         showSnackbar('Status code is not ok.', 'OK', 30);
         closeModalHUD();
       }
-      return "about to fix the return in menu.dart";
+      //return "about to fix the return in menu.dart";
     } catch (e) {
       closeModalHUD();
       if (e.runtimeType.toString() == 'SocketException') {
@@ -267,7 +268,7 @@ class PhotoListState extends State<PhotoListPage> {
         print(e.toString());
         showSnackbar(e.toString(), 'OK', 30);
       }
-      return "about to fix the return in login_screen.dart";
+      //return "about to fix the return in login_screen.dart";
     }
   }
 }
