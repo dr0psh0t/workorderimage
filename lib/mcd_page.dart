@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
 
 class McdPage extends StatefulWidget {
   McdPage({Key key, this.title}) : super(key: key);
@@ -17,50 +17,55 @@ class _McdPageState extends State<McdPage> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _sending = false;
 
-  //  10007
-  String wuhu_boring_start = 'start';
-  String wuhu_boring_end = 'end';
-
-  //  100061
-  String sunnen_honing_start = 'start';
-  String sunnen_honing_end = 'end';
+  TextEditingController controllerMid = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    controllerMid.text = '1000';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('MCD RESTER'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.send),
-            onPressed: () {
-              get_wuhu_boring({'mId': '100061', 'uId': '2', 'h': '3', 'fw': '4', 'timestamp': '5'});
-            },
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text('MCD RESTER'),),
       body: ModalProgressHUD(
         inAsyncCall: _sending,
         child: ListView(
-          children: <Widget>[
-            ListTile(
-              title: Text('10007'),
-              subtitle: Text(wuhu_boring_start+' - '+wuhu_boring_end),
-            ),
-            ListTile(
-              title: Text('100061'),
-              subtitle: Text(sunnen_honing_start+' - '+sunnen_honing_end),
-            ),
-          ],
+          children: ListTile.divideTiles(
+            context: context,
+            tiles: [
+              ListTile(title: Text('Reason', style: TextStyle(fontSize: 13.0),), subtitle: Text(reason),),
+              ListTile(title: Text('MId', style: TextStyle(fontSize: 13.0),), subtitle: Text(mId),),
+              ListTile(title: Text('Readable StartTime', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableStartTime),),
+              ListTile(title: Text('Readable DTime', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableDTime),),
+              ListTile(
+                subtitle: TextField(
+                  onChanged: (value) {},
+                  controller: controllerMid,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: 'Mid',
+                    hintText: 'Mid',
+                    prefixIcon: Icon(Icons.device_hub),
+                    suffixIcon: IconButton(icon: Icon(Icons.send),
+                      onPressed: () {
+                        getStartEnd({'mId': controllerMid.text, 'uId': '2',
+                          'h': '3', 'fw': '4', 'timestamp': '5'});
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(15.0))
+                    ),
+                  ),
+                  style: TextStyle(color: Colors.black54),
+                ),
+              ),
+            ]
+          ).toList(),
         ),
       ),
-
     );
   }
 
@@ -80,47 +85,36 @@ class _McdPageState extends State<McdPage> {
     );
   }
 
-  Future<void> get_wuhu_boring(var params) async {
+  String success;
+  String reason;
+  String hash;
+  String mId;
+  String startTime;
+  String dTime;
+  String readableStartTime;
+  String readableDTime;
+
+  Future<void> getStartEnd(var params) async {
     try {
       setState(() { _sending = true; });
-      
+
       final uri = new Uri.http('192.168.1.150:8080',
           '/joborder/IoTCheckWorkQueue', params);
-      
+
       var response = await http.post(uri, headers: {'Acc'
           'ept': 'application/json'});
 
       if (response == null) {
         setState(() { _sending = false; });
+
         showSnackbar('Unable to create response object. Cause: null.', 'OK',
             false);
       } else if (response.statusCode == 200) {
-        
         var result = json.decode(response.body);
-        
+
         setState(() {
           _sending = false;
 
-          String startTime = result['startTime'].toString();
-          String dTime = result['dTime'].toString();
-
-          final df = new DateFormat('dd-MM-yyyy hh:mm a');
-
-          if (startTime != 'null') {
-            wuhu_boring_start = DateTime.fromMillisecondsSinceEpoch(
-                int.parse(startTime) * 1000, isUtc: true).toString();
-          } else {
-            wuhu_boring_start = 'null';
-          }
-
-          if (dTime != 'null') {
-            wuhu_boring_end = DateTime.fromMillisecondsSinceEpoch(
-                int.parse(dTime) * 1000, isUtc: true).toString();
-          } else {
-            wuhu_boring_end = 'null';
-          }
-          
-          /*
           success = result['success'].toString();
           reason = result['reason'].toString();
           hash = result['hash'].toString();
@@ -134,21 +128,17 @@ class _McdPageState extends State<McdPage> {
           } else {
             readableStartTime = 'null';
           }
-
           if (dTime != 'null') {
             readableDTime = DateTime.fromMillisecondsSinceEpoch(
                 int.parse(dTime) * 1000, isUtc: true).toString();
           } else {
             readableDTime = 'null';
-          }*/
+          }
         });
-      } else {
-        setState(() { _sending = false; });
-        showSnackbar('Request unsuccessful.', 'OK', false);
       }
     } catch (e) {
       setState(() { _sending = false; });
-      
+
       if (e.runtimeType.toString() == 'SocketException') {
         showSnackbar('Unable to create connection to the server.', 'OK', false);
       } else {

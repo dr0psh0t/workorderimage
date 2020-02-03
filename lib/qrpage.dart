@@ -42,7 +42,7 @@ class QrState extends State<QrPage> {
               padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
               child: TextField(
                 onChanged: (value) {
-                  print(value);
+                  //print(value);
                   qrControl.text = '';
                 },
                 controller: qrControl,
@@ -52,11 +52,11 @@ class QrState extends State<QrPage> {
                   hintText: 'QR',
                   prefixIcon: Icon(Icons.code),
                   suffixIcon: IconButton(icon: Icon(Icons.scanner),
-                    //onPressed: barcodeScan,
-                    onPressed: () {
+                    onPressed: barcodeScan,
+                    /*onPressed: () {
                       Navigator.push(context, SlideRightRoute(
                           page: QrCameraPage(callback: setQrCode,)));
-                    },
+                    },*/
                   ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15.0))
