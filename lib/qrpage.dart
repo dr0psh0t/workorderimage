@@ -52,11 +52,11 @@ class QrState extends State<QrPage> {
                   hintText: 'QR',
                   prefixIcon: Icon(Icons.code),
                   suffixIcon: IconButton(icon: Icon(Icons.scanner),
-                    onPressed: barcodeScan,
-                    /*onPressed: () {
+                    //onPressed: barcodeScan,
+                    onPressed: () {
                       Navigator.push(context, SlideRightRoute(
                           page: QrCameraPage(callback: setQrCode,)));
-                    },*/
+                    },
                   ),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15.0))

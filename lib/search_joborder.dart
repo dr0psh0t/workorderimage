@@ -170,25 +170,7 @@ class SearchPageState extends State<SearchPage> {
           } else if (result['totalCount'] > 0) {
 
             returnMap['success'] = true;
-            //returnMap['reason'] = response.body;
-            //returnMap['reason'] = result;
             returnMap['jobOrders'] = result['jobOrders'];
-
-            /*
-            List<dynamic> list = result['jobOrders'];
-            List<Joborder> joborders = new List();
-
-            for (int x = 0; x < list.length; x++) {
-              joborders.add(Joborder(
-                result['jobOrders'][x]['customer'],
-                result['jobOrders'][x]['joNum'],
-                result['jobOrders'][x]['joId'],
-              ));
-            }
-
-            Navigator.push(context, SlideRightRoute(
-                page: JobordersPage(joborders)));
-             */
           }
         } else if (result['success'] != null) {
           returnMap['reason'] = result['reason'];

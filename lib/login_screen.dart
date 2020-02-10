@@ -313,20 +313,20 @@ class LoginPageState extends State<LoginPage> {
 
   Future getDialog(String message) {
     return showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Close'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          );
-        }
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(message),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      }
     );
   }
 }

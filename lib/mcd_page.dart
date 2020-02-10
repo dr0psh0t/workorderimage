@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:intl/intl.dart';
 
 class McdPage extends StatefulWidget {
@@ -38,8 +39,8 @@ class _McdPageState extends State<McdPage> {
             tiles: [
               ListTile(title: Text('Reason', style: TextStyle(fontSize: 13.0),), subtitle: Text(reason),),
               ListTile(title: Text('MId', style: TextStyle(fontSize: 13.0),), subtitle: Text(mId),),
-              ListTile(title: Text('Readable StartTime', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableStartTime),),
-              ListTile(title: Text('Readable DTime', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableDTime),),
+              ListTile(title: Text('Start Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableStartTime),),
+              ListTile(title: Text('Dead Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableDTime),),
               ListTile(
                 subtitle: TextField(
                   onChanged: (value) {},
@@ -95,11 +96,18 @@ class _McdPageState extends State<McdPage> {
   String readableDTime;
 
   Future<void> getStartEnd(var params) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String domain = prefs.getString('domain');
+    String path = prefs.getString('path');
+
     try {
       setState(() { _sending = true; });
 
-      final uri = new Uri.http('192.168.1.150:8080',
-          '/joborder/IoTCheckWorkQueue', params);
+      //final uri = new Uri.http('192.168.1.150:8080',
+          //'/joborder/IoTCheckWorkQueue', params);
+
+      final uri = new Uri.http(domain, path+'IoTCheckWorkQueue', params,);
 
       var response = await http.post(uri, headers: {'Acc'
           'ept': 'application/json'});

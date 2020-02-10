@@ -6,15 +6,13 @@
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/app.dill" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/app.dill" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/arm64-v8a/app.so" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/arm64-v8a/app.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/armeabi-v7a/app.so" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/armeabi-v7a/app.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.d" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.d" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.stamp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/.filecache" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/.filecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/app.dill" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/app.dill" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.d" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.d" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.stamp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/login_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/mcd_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/mcd_page.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/qrpage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/qrpage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/search_joborder.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/search_joborder.dart" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.dart_tool/" />
     <ignored path="$PROJECT_DIR$/.idea/" />
@@ -29,26 +27,14 @@
   <component name="DefaultGradleProjectSettings">
     <option name="isMigrated" value="true" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="IVQKHYO779SOPZMB" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="F8AZCY28A469" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/mcd_page.dart">
+        <entry file="file://$PROJECT_DIR$/lib/login_screen.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="55" column="24" lean-forward="true" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
-              <folding>
-                <element signature="e#0#39#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/qrpage.dart">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="174">
-              <caret line="77" column="45" lean-forward="true" selection-start-line="77" selection-start-column="45" selection-end-line="77" selection-end-column="45" />
+            <state relative-caret-position="-1380">
+              <caret line="157" column="22" selection-start-line="157" selection-start-column="22" selection-end-line="157" selection-end-column="22" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -57,10 +43,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/lib/login_screen.dart">
+        <entry file="file://$PROJECT_DIR$/lib/mcd_page.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="513">
-              <caret line="335" column="25" lean-forward="true" selection-start-line="335" selection-start-column="25" selection-end-line="335" selection-end-column="25" />
+            <state relative-caret-position="153">
+              <caret line="132" column="8" selection-start-line="132" selection-start-column="8" selection-end-line="132" selection-end-column="8" />
               <folding>
                 <element signature="e#0#39#0" expanded="true" />
               </folding>
@@ -94,14 +80,14 @@
         <option value="$PROJECT_DIR$/lib/mainpage.dart" />
         <option value="$PROJECT_DIR$/pubspec.yaml" />
         <option value="$PROJECT_DIR$/README.md" />
-        <option value="$PROJECT_DIR$/lib/search_joborder.dart" />
         <option value="$PROJECT_DIR$/lib/joborders.dart" />
         <option value="$PROJECT_DIR$/lib/main.dart" />
         <option value="$PROJECT_DIR$/lib/menu.dart" />
-        <option value="$PROJECT_DIR$/lib/qrpage.dart" />
         <option value="$PROJECT_DIR$/lib/photo_list.dart" />
-        <option value="$PROJECT_DIR$/lib/mcd_page.dart" />
         <option value="$PROJECT_DIR$/lib/login_screen.dart" />
+        <option value="$PROJECT_DIR$/lib/search_joborder.dart" />
+        <option value="$PROJECT_DIR$/lib/qrpage.dart" />
+        <option value="$PROJECT_DIR$/lib/mcd_page.dart" />
       </list>
     </option>
   </component>
@@ -117,7 +103,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="AndroidView" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -134,8 +122,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -181,7 +167,7 @@
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19472913" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18448023" />
       <window_info id="Captures" order="1" side_tool="true" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Image Layers" order="3" />
@@ -191,7 +177,7 @@
       <window_info id="Capture Tool" order="7" />
       <window_info id="Favorites" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Dart Analysis" order="0" weight="0.329653" />
-      <window_info anchor="bottom" id="Run" order="1" weight="0.16485226" />
+      <window_info active="true" anchor="bottom" id="Run" order="1" visible="true" weight="0.25972006" />
       <window_info anchor="bottom" id="TODO" order="2" />
       <window_info anchor="bottom" id="Android Profiler" order="3" show_stripe_button="false" />
       <window_info anchor="bottom" id="Logcat" order="4" />
@@ -216,13 +202,6 @@
         <state relative-caret-position="-1260" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/slide_right_route.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="18" column="40" lean-forward="true" selection-start-line="18" selection-start-column="40" selection-end-line="18" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test/widget_test.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -230,13 +209,6 @@
           <folding>
             <element signature="e#357#396#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/qrcamera.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-40">
-          <caret line="2" column="49" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="49" />
         </state>
       </provider>
     </entry>
@@ -373,16 +345,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/search_joborder.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="588">
-          <caret line="157" column="67" selection-start-line="157" selection-start-column="8" selection-end-line="157" selection-end-column="67" />
-          <folding>
-            <element signature="e#0#39#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/photo_list.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-144">
@@ -410,20 +372,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/mcd_page.dart">
+    <entry file="file://$PROJECT_DIR$/lib/qrcamera.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="55" column="24" lean-forward="true" selection-start-line="55" selection-start-column="24" selection-end-line="55" selection-end-column="24" />
+        <state relative-caret-position="105">
+          <caret line="7" column="26" lean-forward="true" selection-start-line="7" selection-start-column="26" selection-end-line="7" selection-end-column="26" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/search_joborder.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="44" column="49" selection-start-line="44" selection-start-column="49" selection-end-line="44" selection-end-column="49" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/slide_right_route.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/qrpage.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="174">
-          <caret line="77" column="45" lean-forward="true" selection-start-line="77" selection-start-column="45" selection-end-line="77" selection-end-column="45" />
+        <state relative-caret-position="-605">
+          <caret line="50" column="34" selection-start-line="50" selection-start-column="34" selection-end-line="50" selection-end-column="34" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
@@ -432,8 +411,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/login_screen.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="513">
-          <caret line="335" column="25" lean-forward="true" selection-start-line="335" selection-start-column="25" selection-end-line="335" selection-end-column="25" />
+        <state relative-caret-position="-1380">
+          <caret line="157" column="22" selection-start-line="157" selection-start-column="22" selection-end-line="157" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/mcd_page.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="132" column="8" selection-start-line="132" selection-start-column="8" selection-end-line="132" selection-end-column="8" />
           <folding>
             <element signature="e#0#39#0" expanded="true" />
           </folding>
