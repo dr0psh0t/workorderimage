@@ -46,7 +46,6 @@ class JobordersState extends State<JobordersPage> {
                 this.widget.joborders[index].joNum,
                 this.widget.joborders[index].joId,
               )));
-
             },
           );
         },

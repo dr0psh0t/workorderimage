@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'slide_right_route.dart';
@@ -6,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class QrPage extends StatefulWidget {
   @override
@@ -18,6 +21,8 @@ class QrState extends State<QrPage> {
   final joControl =TextEditingController();
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool _sending = false;
 
   @override
   void initState() {
@@ -33,44 +38,52 @@ class QrState extends State<QrPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(title: Text('QR Scan'),),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(color: Colors.white,),
-        child: ListView(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
-              child: TextField(
-                onChanged: (value) {
-                  //print(value);
-                  qrControl.text = '';
-                },
-                controller: qrControl,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  labelText: 'QR',
-                  hintText: 'QR',
-                  prefixIcon: Icon(Icons.code),
-                  suffixIcon: IconButton(icon: Icon(Icons.scanner),
-                    //onPressed: barcodeScan,
-                    onPressed: () {
-                      Navigator.push(context, SlideRightRoute(
-                          page: QrCameraPage(callback: setQrCode,)));
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))
-                  ),
-                ),
-                style: TextStyle(color: Colors.black54),
-              ),
-            ),
+      body: ModalProgressHUD(
+        child: buildWidget(),
+        inAsyncCall: _sending,
+      ),
+    );
+  }
 
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              child: TextField(
-                onTap: () {
-                  showDialog(
+  Widget buildWidget() {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      decoration: BoxDecoration(color: Colors.white,),
+      child: ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
+            child: TextField(
+              onChanged: (value) {
+                //print(value);
+                qrControl.text = '';
+              },
+              controller: qrControl,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                labelText: 'QR',
+                hintText: 'QR',
+                prefixIcon: Icon(Icons.code),
+                suffixIcon: IconButton(icon: Icon(Icons.scanner),
+                  //onPressed: barcodeScan,
+                  onPressed: () {
+                    Navigator.push(context, SlideRightRoute(
+                        page: QrCameraPage(callback: setQrCode,)));
+                  },
+                ),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))
+                ),
+              ),
+              style: TextStyle(color: Colors.black54),
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+            child: TextField(
+              onTap: () {
+                showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return SimpleDialog(
@@ -106,82 +119,123 @@ class QrState extends State<QrPage> {
                         ],
                       );
                     }
-                  );
-                },
-                onChanged: (value) {},
-                controller: typeControl,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  labelText: 'Type',
-                  hintText: 'Type',
-                  prefixIcon: Icon(Icons.merge_type),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))
-                  ),
+                );
+              },
+              onChanged: (value) {},
+              controller: typeControl,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                labelText: 'Type',
+                hintText: 'Type',
+                prefixIcon: Icon(Icons.merge_type),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))
                 ),
-                style: TextStyle(color: Colors.black54),
               ),
+              style: TextStyle(color: Colors.black54),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
-              child: TextField(
-                onChanged: (value) {},
-                controller: joControl,
-                keyboardType: TextInputType.text,
-                decoration: InputDecoration(
-                  labelText: 'JO #',
-                  hintText: 'JO #',
-                  prefixIcon: Icon(Icons.format_list_numbered),
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0))
-                  ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
+            child: TextField(
+              onChanged: (value) {},
+              controller: joControl,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                labelText: 'JO #',
+                hintText: 'JO #',
+                prefixIcon: Icon(Icons.format_list_numbered),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0))
                 ),
-                style: TextStyle(color: Colors.black54),
               ),
+              style: TextStyle(color: Colors.black54),
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 30.0),
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: FlatButton(
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-                      splashColor: Colors.blue,
-                      color: Colors.blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(17.0),
-                        child: Text('Submit', style: TextStyle(color: Colors.white),),
-                      ),
-                      onPressed: () {
-                        sendQr({
-                          'qr': qrControl.text,
-                          'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
-                          'source': 'mcsa',
-                          'type': typeControl.text,
-                          'joNum': joControl.text,});
-                      },
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 30.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: FlatButton(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+                    splashColor: Colors.blue,
+                    color: Colors.blue,
+                    child: Padding(
+                      padding: const EdgeInsets.all(17.0),
+                      child: Text('Submit', style: TextStyle(color: Colors.white),),
                     ),
+                    onPressed: () {
+                      sendQr({
+                        'qr': qrControl.text,
+                        'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
+                        'source': 'mcsa',
+                        'type': typeControl.text,
+                        'joNum': joControl.text,});
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      /*
-      floatingActionButton: FloatingActionButton.extended(
-        label: Text('QR Scan'),
-        icon: Icon(Icons.scanner),
-        onPressed: barcodeScan,
-        //  use this if the phone has a clear camera enough to scan small qr images.
-        //  using the qr_mobile_vision plugin. otherwise, use barcodeScan method for
-        //  lower-end phones.
-        //onPressed: () { Navigator.push(context,
-            //SlideRightRoute(page: QrCameraPage(callback: setQrCode, ))); },
-      ),*/
     );
   }
+
+  /*
+  Future<Map> sendQr(var params) async {
+
+    setState(() { _sending = true; });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String domain = prefs.getString('domain');
+    String path = prefs.getString('path');
+    String sessionId = prefs.getString('sessionId');
+
+    var returnMap = Map();
+    returnMap['success'] = false;
+
+    try {
+
+      final uri = new Uri.http(domain, path+'InitScanWorkOrderQr', params,);
+
+      var response = await http.post(uri, headers: {
+        'Accept': 'application/json',
+        'Cookie':'JSESSIONID='+sessionId,
+      });
+
+      if (response == null) {
+        returnMap['reason'] = 'No response received. Cause: null.';
+      } else if (response.statusCode == 200) {
+        var result = json.decode(response.body);
+        String msg = result['reason'];
+
+        if (msg == null || msg == '') {
+          msg = 'Workorder QR has scanned.';
+        }
+
+        showSnackbar(msg, 'OK', false);
+
+        qrControl.clear();
+      } else {
+        showSnackbar('Status code is not ok.', 'OK', false);
+      }
+
+    } on SocketException {
+
+      setState(() {_sending = false; });
+      returnMap['reason'] = 'Unable to create connection to the server.';
+      return returnMap;
+
+    } catch (e) {
+
+      setState(() { _sending = false; });
+      returnMap['reason'] = e.toString();
+      return returnMap;
+    }
+  }*/
 
   void sendQr(var params) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

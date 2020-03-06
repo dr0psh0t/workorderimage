@@ -30,7 +30,8 @@ class MainPageState extends State<MainPage> {
             icon: Icon(Icons.http),
             onPressed: () {
               //Navigator.of(context).pop();
-              Navigator.push(context, SlideRightRoute(page: McdPage()));
+              //Navigator.push(context, SlideRightRoute(page: McdPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => McdPage()));
             },
           ),
           IconButton(
@@ -42,8 +43,8 @@ class MainPageState extends State<MainPage> {
           IconButton(
             icon: Icon(Icons.archive),
             onPressed: () {
-              Navigator.of(context, rootNavigator: true)
-                  .pushReplacement(MaterialPageRoute(builder: (context) => new LoginScreen()));
+              Navigator.of(context, rootNavigator: true).pushReplacement(
+                  MaterialPageRoute(builder: (context) => new LoginScreen()));
             },
           ),
         ],
@@ -126,6 +127,7 @@ class MainPageState extends State<MainPage> {
   }
 
   TextEditingController _settingsController = TextEditingController();
+  
   displayDialog(BuildContext context) async {
     return showDialog(
       context: context,
@@ -144,7 +146,9 @@ class MainPageState extends State<MainPage> {
                 if (_settingsController.text == 'wmdcdev') {
                   _settingsController.text = '';
                   Navigator.of(context).pop();
-                  Navigator.push(context, SlideRightRoute(page: SettingsScreen()));
+                  //Navigator.push(context, SlideRightRoute(page: SettingsScreen()));
+                  Navigator.push(context, MaterialPageRoute(
+                      builder: (context) => SettingsScreen()));
                 }
               },
             )

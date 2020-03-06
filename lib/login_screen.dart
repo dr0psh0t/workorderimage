@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -60,6 +62,8 @@ class LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     showPrefs();
+
+    
   }
 
   bool _obscureText = true;
@@ -158,7 +162,7 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     onPressed: () {
                       if (controllerPassword.text.isEmpty) {
-                        return getDialog('Password is required.');
+                        getDialog('Password is required.');
                       }
 
                       return login({
@@ -237,6 +241,7 @@ class LoginPageState extends State<LoginPage> {
 
   Future<Map> login(var params) async {
 
+    setState(() { _saving = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String domain = prefs.getString('domain');
@@ -246,23 +251,15 @@ class LoginPageState extends State<LoginPage> {
     returnMap['success'] = false;
 
     try {
-      setState(() { _saving = true; });
 
       final uri = new Uri.http(domain, path+'Authenticate', params,);
-
-      var response = await http.post(uri, headers: {
-        'Accept':'application/json'
-      });
+      var response = await http.post(uri, headers: {'Accept':'application/json'});
 
       String cookie = response.headers['set-cookie'];
 
       if (response == null) {
-        setState(() { _saving = false; });
-
         returnMap['reason'] = 'No response received. Cause: null.';
       } else if (response.statusCode == 200) {
-        setState(() { _saving = false; });
-
         var result = json.decode(response.body);
 
         returnMap['success'] = result['success'];
@@ -276,21 +273,22 @@ class LoginPageState extends State<LoginPage> {
             cookie.substring(start, end),);
         }
       } else {
-        setState(() { _saving = false; });
-
         returnMap['reason'] = 'Status code is not OK.';
       }
 
-      return returnMap;
-    } catch (e) {
       setState(() { _saving = false; });
+      return returnMap;
 
-      if (e.runtimeType.toString() == 'SocketException') {
-        returnMap['reason'] = 'Unable to create connection to the server.';
-      } else {
-        returnMap['reason'] = e.toString();
-      }
+    } on SocketException {
 
+      setState(() {_saving = false; });
+      returnMap['reason'] = 'Unable to create connection to the server.';
+      return returnMap;
+
+    } catch (e) {
+
+      setState(() { _saving = false; });
+      returnMap['reason'] = e.toString();
       return returnMap;
     }
   }
@@ -311,8 +309,8 @@ class LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future getDialog(String message) {
-    return showDialog(
+  void getDialog(String message) {
+    showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -329,30 +327,4 @@ class LoginPageState extends State<LoginPage> {
       }
     );
   }
-}
-
-class ScaleRoute extends PageRouteBuilder {
-  final Widget page;
-  ScaleRoute({this.page}) : super(
-    pageBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        ) => page,
-    transitionsBuilder: (
-        BuildContext context,
-        Animation<double> animation,
-        Animation<double> secondaryAnimation,
-        Widget child,
-        ) =>
-        ScaleTransition(
-          scale: Tween<double>(
-            begin: 0.0,
-            end: 1.0,
-          ).animate(
-            CurvedAnimation(parent: animation, curve: Curves.fastOutSlowIn,),
-          ),
-          child: child,
-        ),
-  );
 }

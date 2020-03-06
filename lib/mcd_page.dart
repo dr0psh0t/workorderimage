@@ -1,9 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//import 'package:intl/intl.dart';
 
 class McdPage extends StatefulWidget {
   McdPage({Key key, this.title}) : super(key: key);
@@ -37,10 +38,11 @@ class _McdPageState extends State<McdPage> {
           children: ListTile.divideTiles(
             context: context,
             tiles: [
-              ListTile(title: Text('Reason', style: TextStyle(fontSize: 13.0),), subtitle: Text(reason),),
-              ListTile(title: Text('MId', style: TextStyle(fontSize: 13.0),), subtitle: Text(mId),),
-              ListTile(title: Text('Start Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableStartTime),),
-              ListTile(title: Text('Dead Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableDTime),),
+              ListTile(title: Text('JoInfo', style: TextStyle(fontSize: 13.0),), subtitle: Text(joInfo??''),),
+              ListTile(title: Text('Reason', style: TextStyle(fontSize: 13.0),), subtitle: Text(reason??''),),
+              ListTile(title: Text('MId', style: TextStyle(fontSize: 13.0),), subtitle: Text(mId??''),),
+              ListTile(title: Text('Start Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableStartTime??''),),
+              ListTile(title: Text('Dead Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableDTime??''),),
               ListTile(
                 subtitle: TextField(
                   onChanged: (value) {},
@@ -52,8 +54,45 @@ class _McdPageState extends State<McdPage> {
                     prefixIcon: Icon(Icons.device_hub),
                     suffixIcon: IconButton(icon: Icon(Icons.send),
                       onPressed: () {
+
                         getStartEnd({'mId': controllerMid.text, 'uId': '2',
-                          'h': '3', 'fw': '4', 'timestamp': '5'});
+                          'h': '3', 'fw': '4', 'timestamp': '5'}).then((map) {
+
+                            if (map['requestSuccess']) {
+                              if (map['reason']['success'] == 1) {
+                                setState(() {
+                                  reason = 'Workorder is running';
+                                  mId = map['reason']['mId'].toString();
+                                  joInfo = map['reason']['joInfo'];
+                                  startTime = map['reason']['startTime'].toString();
+                                  dTime = map['reason']['dTime'].toString();
+
+                                  if (startTime != 'null') {
+                                    readableStartTime = DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(startTime) * 1000, isUtc: true).toString();
+                                  } else {
+                                    readableStartTime = 'null';
+                                  }
+                                  if (dTime != 'null') {
+                                    readableDTime = DateTime.fromMillisecondsSinceEpoch(
+                                        int.parse(dTime) * 1000, isUtc: true).toString();
+                                  } else {
+                                    readableDTime = 'null';
+                                  }
+                                });
+                              } else {
+                                setState(() {
+                                  reason = map['reason']['reason'];
+                                  mId = '';
+                                  joInfo = '';
+                                  readableDTime = '';
+                                  readableStartTime = '';
+                                });
+                              }
+                            } else {
+                              showSnackbar(map['reason'], 'OK', false);
+                            }
+                        });
                       },
                     ),
                     border: OutlineInputBorder(
@@ -86,6 +125,7 @@ class _McdPageState extends State<McdPage> {
     );
   }
 
+  String joInfo;
   String success;
   String reason;
   String hash;
@@ -95,64 +135,47 @@ class _McdPageState extends State<McdPage> {
   String readableStartTime;
   String readableDTime;
 
-  Future<void> getStartEnd(var params) async {
+  Future<Map> getStartEnd(var params) async {
+
+    setState(() { _sending = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
 
-    try {
-      setState(() { _sending = true; });
+    var returnMap = new Map();
+    returnMap['requestSuccess'] = false;
 
-      //final uri = new Uri.http('192.168.1.150:8080',
-          //'/joborder/IoTCheckWorkQueue', params);
+    try {
 
       final uri = new Uri.http(domain, path+'IoTCheckWorkQueue', params,);
-
-      var response = await http.post(uri, headers: {'Acc'
-          'ept': 'application/json'});
+      var response = await http.post(uri, headers: {'Accept': 'application/json'});
 
       if (response == null) {
-        setState(() { _sending = false; });
-
-        showSnackbar('Unable to create response object. Cause: null.', 'OK',
-            false);
+        returnMap['reason'] = 'No response received. Cause: null.';
       } else if (response.statusCode == 200) {
         var result = json.decode(response.body);
 
-        setState(() {
-          _sending = false;
+        returnMap['requestSuccess'] = true;
+        returnMap['reason'] = result;
 
-          success = result['success'].toString();
-          reason = result['reason'].toString();
-          hash = result['hash'].toString();
-          mId = result['mId'].toString();
-          startTime = result['startTime'].toString();
-          dTime = result['dTime'].toString();
-
-          if (startTime != 'null') {
-            readableStartTime = DateTime.fromMillisecondsSinceEpoch(
-                int.parse(startTime) * 1000, isUtc: true).toString();
-          } else {
-            readableStartTime = 'null';
-          }
-          if (dTime != 'null') {
-            readableDTime = DateTime.fromMillisecondsSinceEpoch(
-                int.parse(dTime) * 1000, isUtc: true).toString();
-          } else {
-            readableDTime = 'null';
-          }
-        });
-      }
-    } catch (e) {
-      setState(() { _sending = false; });
-
-      if (e.runtimeType.toString() == 'SocketException') {
-        showSnackbar('Unable to create connection to the server.', 'OK', false);
       } else {
-        print(e.toString());
-        showSnackbar(e.toString(), 'OK', false);
+        returnMap['reason'] = 'Status code is not OK.';
       }
+
+      setState(() { _sending = false; });
+      return returnMap;
+
+    } on SocketException {
+
+      setState(() { _sending = false; });
+      returnMap['reason'] = 'Unable to create connection to the server.';
+
+    } catch (e) {
+
+      setState(() { _sending = false; });
+      returnMap['reason'] = e.toString();
+      return returnMap;
     }
   }
 }

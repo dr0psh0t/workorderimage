@@ -27,92 +27,94 @@ class SearchPageState extends State<SearchPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(title: Text('Search'),),
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0,
-                  top: 100.0),
-              child: TextField(
-                onChanged: (value) {},
-                controller: searchController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Search Joborder',
-                  hintText: 'Search Joborder',
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
+      body: getWidgetBody(),
+    );
+  }
+
+  Widget getWidgetBody() {
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 100.0),
+            child: TextField(
+              onChanged: (value) {},
+              controller: searchController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Search Joborder',
+                hintText: 'Search Joborder',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))
-                  ),
                 ),
-                style: TextStyle(color: Colors.black54),
               ),
+              style: TextStyle(color: Colors.black54),
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 20.0),
-              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: FlatButton(
-                      shape: RoundedRectangleBorder(
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 20.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: FlatButton(
+                    shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15.0)
+                    ),
+                    splashColor: Colors.blue,
+                    color: Colors.blue,
+                    child: Padding(
+                      padding: const EdgeInsets.all(17.0),
+                      child: Text('Search',
+                        style: TextStyle(color: Colors.white),
                       ),
-                      splashColor: Colors.blue,
-                      color: Colors.blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(17.0),
-                        child: Text('Search',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                      onPressed: () {
-                        if (searchController.text.length > 2) {
+                    ),
+                    onPressed: () {
+                      if (searchController.text.length > 2) {
 
-                          search({'q': searchController.text, 'type': 'joid',}).then((map) {
+                        search({'q': searchController.text, 'type': 'joid',
+                        }).then((map) {
 
-                            if (map['success']) {
+                          if (map['success']) {
 
-                              List<dynamic> list = map['jobOrders'];
-                              List<Joborder> joborders = new List();
-                              var result = map['jobOrders'];
+                            List<dynamic> list = map['jobOrders'];
+                            List<Joborder> joborders = new List();
+                            var result = map['jobOrders'];
 
-                              for (int x = 0; x < list.length; x++) {
-                                joborders.add(Joborder(
-                                  result[x]['customer'], result[x]['joNum'], result[x]['joId'],));
-                              }
-
-                              Navigator.push(context, SlideRightRoute(page: JobordersPage(joborders)));
-
-                            } else {
-                              showSnackbar(map['reason'], 'OK', false);
+                            for (int x = 0; x < list.length; x++) {
+                              joborders.add(Joborder(result[x]['customer'],
+                                result[x]['joNum'], result[x]['joId'],));
                             }
 
-                          });
+                            Navigator.push(context, SlideRightRoute(
+                                page: JobordersPage(joborders)));
+                          } else {
+                            showSnackbar(map['reason'], 'OK', false);
+                          }
 
-                        } else {
-                          showSnackbar('Minimum of 3 characters to search', 'OK', false);
-                        }
-                      },
-                    ),
+                        });
+
+                      } else {
+                        showSnackbar('Minimum of 3 characters to search', 'OK',
+                            false);
+                      }
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return ModalProgressHUD(
-      child: buildWidget(),
-      inAsyncCall: _loading,
-    );
+    return ModalProgressHUD(child: buildWidget(), inAsyncCall: _loading,);
   }
 
   void showSnackbar(String msg, String label, bool popable) {
@@ -122,7 +124,7 @@ class SearchPageState extends State<SearchPage> {
         action: SnackBarAction(
           label: label,
           onPressed: () {
-               if (popable) {
+            if (popable) {
               Navigator.of(context).pop();
             }
           },
@@ -132,7 +134,6 @@ class SearchPageState extends State<SearchPage> {
   }
 
   Future<Map> search(var params) async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String domain = prefs.getString('domain');
