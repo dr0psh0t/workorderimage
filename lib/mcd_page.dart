@@ -39,10 +39,10 @@ class _McdPageState extends State<McdPage> {
             context: context,
             tiles: [
               ListTile(title: Text('JoInfo', style: TextStyle(fontSize: 13.0),), subtitle: Text(joInfo??''),),
-              ListTile(title: Text('Reason', style: TextStyle(fontSize: 13.0),), subtitle: Text(reason??''),),
               ListTile(title: Text('MId', style: TextStyle(fontSize: 13.0),), subtitle: Text(mId??''),),
               ListTile(title: Text('Start Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableStartTime??''),),
               ListTile(title: Text('Dead Time', style: TextStyle(fontSize: 13.0),), subtitle: Text(readableDTime??''),),
+              ListTile(title: Text('Reason', style: TextStyle(fontSize: 13.0),), subtitle: Text(reason??''),),
               ListTile(
                 subtitle: TextField(
                   onChanged: (value) {},

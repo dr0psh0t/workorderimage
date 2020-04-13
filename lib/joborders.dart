@@ -3,14 +3,21 @@ import 'joborder.dart';
 import 'slide_right_route.dart';
 import 'menu.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class JobordersPage extends StatefulWidget {
   List<Joborder> joborders;
   int len;
 
+  /*
   JobordersPage(List<Joborder> joborders) {
     this.joborders = joborders;
     this.len = joborders.length;
+  }*/
+
+  JobordersPage(this.joborders) {
+    len = joborders.length;
   }
 
   @override
@@ -19,6 +26,11 @@ class JobordersPage extends StatefulWidget {
 
 class JobordersState extends State<JobordersPage> {
   var unescape;
+
+  TextEditingController searchController = TextEditingController();
+
+  bool _loading =false;
+  final _scaffoldKey =GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -29,31 +41,129 @@ class JobordersState extends State<JobordersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(title: Text('Joborders'),),
-      body: ListView.separated(
-        itemCount: this.widget.len,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            leading: Icon(Icons.assignment),
-            subtitle: Text(unescape.convert(
-                this.widget.joborders[index].customer).toString()),
-            title: Text(this.widget.joborders[index].joNum),
-            trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Padding(
+                padding: const EdgeInsets.all(2.0),
+                child: TextField(
+                  onChanged: (value) {
 
-              Navigator.push(context, SlideRightRoute(page: MenuPage(
-                this.widget.joborders[index].customer,
-                this.widget.joborders[index].joNum,
-                this.widget.joborders[index].joId,
-              )));
-            },
-          );
-        },
-        padding: EdgeInsets.only(top: 10.0),
-        separatorBuilder: (context, index) => Divider(
-          color: Colors.black26,
+                  },
+                  controller: searchController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Search JO',
+                    hintText: 'Search JO',
+                    prefixIcon: Icon(Icons.format_list_numbered),
+                    suffixIcon: IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(25.0))
+                    ),
+                  ),
+                ),
+              ),
+            Expanded(
+              child: ListView.separated(
+                itemCount: this.widget.len,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    leading: Icon(Icons.assignment),
+                    subtitle: Text(unescape.convert(
+                        this.widget.joborders[index].customer).toString()),
+                    title: Text(this.widget.joborders[index].joNum),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+
+                      Navigator.push(context, SlideRightRoute(page: MenuPage(
+                        this.widget.joborders[index].customer,
+                        this.widget.joborders[index].joNum,
+                        this.widget.joborders[index].joId,
+                      )));
+                    },
+                  );
+                },
+                padding: EdgeInsets.all(5.0),
+                separatorBuilder: (context, index) => Divider(
+                  color: Colors.black26,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  /*
+  Future<Map> search(var params) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String domain = prefs.getString('domain');
+    String path = prefs.getString('path');
+    String sessionId = prefs.getString('sessionId');
+
+    var returnMap = new Map();
+    returnMap['success'] = false;
+
+    try {
+      setState(() { _loading = true; });
+
+      final uri = new Uri.http(domain, path+'GetJobOrderList', params,);
+
+      var response = await http.post(uri, headers: {
+        'Accept':'application/json',
+        'Cookie':'JSESSIONID='+sessionId,
+      });
+
+      if (response == null) {
+        setState(() { _loading = false; });
+
+        returnMap['reason'] = 'No response received. Cause: null.';
+
+      } else if (response.statusCode == 200) {
+        setState(() { _loading = false; });
+
+        var result = json.decode(response.body);
+
+        if (result['totalCount'] != null) {
+
+          if (result['totalCount'] < 1) {
+            returnMap['reason'] = 'No joborder found.';
+
+          } else if (result['totalCount'] > 0) {
+
+            returnMap['success'] = true;
+            returnMap['jobOrders'] = result['jobOrders'];
+          }
+        } else if (result['success'] != null) {
+          returnMap['reason'] = result['reason'];
+        } else {
+          returnMap['reason'] = response.body;
+        }
+      } else {
+        setState(() { _loading = false; });
+        returnMap['reason'] = 'Status code is not ok.';
+      }
+
+      return returnMap;
+    } catch (e) {
+      setState(() { _loading = false; });
+
+      if (e.runtimeType.toString() == 'SocketException') {
+        returnMap['reason'] = 'Unable to create connection to the server.';
+      } else {
+        returnMap['reason'] = e.toString();
+      }
+
+      return returnMap;
+    }
+  }*/
 }
