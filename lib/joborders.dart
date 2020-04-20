@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'joborder.dart';
+import 'dart:convert';
 import 'slide_right_route.dart';
 import 'menu.dart';
 import 'package:html_unescape/html_unescape.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class JobordersPage extends StatefulWidget {
   List<Joborder> joborders;
   int len;
-
-  /*
-  JobordersPage(List<Joborder> joborders) {
-    this.joborders = joborders;
-    this.len = joborders.length;
-  }*/
 
   JobordersPage(this.joborders) {
     len = joborders.length;
@@ -47,7 +43,7 @@ class JobordersState extends State<JobordersPage> {
         child: Column(
           children: <Widget>[
             Padding(
-                padding: const EdgeInsets.all(2.0),
+                padding: const EdgeInsets.all(5.0),
                 child: TextField(
                   onChanged: (value) {
 
@@ -61,11 +57,33 @@ class JobordersState extends State<JobordersPage> {
                     suffixIcon: IconButton(
                       icon: Icon(Icons.search),
                       onPressed: () {
+                        if (searchController.text.length > 2) {
+                          search({'q': searchController.text, 'type': 'joid',}).then((map) {
+                            if (map['success']) {
 
+                              List<dynamic> list = map['jobOrders'];
+                              var result = map['jobOrders'];
+
+                              setState(() {
+                                this.widget.joborders = List();
+                                this.widget.len = list.length;
+
+                                for (int x = 0; x < this.widget.len; x++) {
+                                  this.widget.joborders.add(Joborder(
+                                      result[x]['customer'],
+                                      result[x]['joNum'],
+                                      result[x]['joId']
+                                  ));
+                                }
+
+                              });
+                            }
+                          });
+                        }
                       },
                     ),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25.0))
+                        borderRadius: BorderRadius.all(Radius.circular(10.0))
                     ),
                   ),
                 ),
@@ -82,11 +100,12 @@ class JobordersState extends State<JobordersPage> {
                     trailing: Icon(Icons.arrow_forward_ios),
                     onTap: () {
 
+                      /*
                       Navigator.push(context, SlideRightRoute(page: MenuPage(
                         this.widget.joborders[index].customer,
                         this.widget.joborders[index].joNum,
                         this.widget.joborders[index].joId,
-                      )));
+                      )));*/
                     },
                   );
                 },
@@ -102,7 +121,6 @@ class JobordersState extends State<JobordersPage> {
     );
   }
 
-  /*
   Future<Map> search(var params) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -165,5 +183,5 @@ class JobordersState extends State<JobordersPage> {
 
       return returnMap;
     }
-  }*/
+  }
 }

@@ -6,6 +6,8 @@ import 'qrpage.dart';
 import 'settings_page.dart';
 import 'login_screen.dart';
 import 'mcd_page.dart';
+import 'joborders.dart';
+import 'joborder.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -68,7 +70,9 @@ class MainPageState extends State<MainPage> {
               color: Colors.blue,
               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
                onPressed: () {
-                Navigator.push(context, SlideRightRoute(page: SearchPage()));
+                //Navigator.push(context, SlideRightRoute(page: SearchPage()));
+                 List<Joborder> joborders = List();
+                 Navigator.push(context, SlideRightRoute(page: JobordersPage(joborders)));
               },
             ),
             Padding(padding: EdgeInsets.only(left: 10.0, right: 10.0),),

@@ -90,7 +90,7 @@ class SearchPageState extends State<SearchPage> {
                             }
 
                             Navigator.push(context, SlideRightRoute(
-                                page: JobordersPage(joborders)));
+                            page: JobordersPage(joborders)));
                           } else {
                             showSnackbar(map['reason'], 'OK', false);
                           }

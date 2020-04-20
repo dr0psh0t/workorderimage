@@ -57,19 +57,42 @@ class PhotoListState extends State<PhotoListPage> {
     this.photos = photos;
     this.len = len;
   }
-
-  void _choose() async {
-    file = await ImagePicker.pickImage(source: ImageSource.camera,);
+  
+  Future _choose() async {
+    file = await ImagePicker.pickImage(source: ImageSource.camera);
 
     if (file != null) {
       showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return ChoiceDialog(uploadMultipart: uploadMultipart, fileImage: file,);
-        }
+          context: context,
+          builder: (BuildContext context) {
+            return ChoiceDialog(
+              uploadMultipart: uploadMultipart,
+              fileImage: file,
+            );
+          }
       );
     }
   }
+
+  /*
+  void _choose() async {
+    try {
+      file = await ImagePicker.pickImage(source: ImageSource.camera,);
+
+      if (file != null) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return ChoiceDialog(
+                uploadMultipart: uploadMultipart, fileImage: file,);
+            }
+        );
+      }
+    } catch (e) {
+      showSnackbar(e.toString(), 'Photo Error', 30);
+      print(e.toString());
+    }
+  }*/
 
   void uploadMultipart(File imageFile, int isMain) async {
     setState(() {
