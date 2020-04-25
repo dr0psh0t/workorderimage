@@ -12,7 +12,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'utils.dart';
-import 'search_joborder.dart';
 
 class PhotoListPage extends StatefulWidget {
   List<Photo> photos;
@@ -278,6 +277,7 @@ class PhotoListState extends State<PhotoListPage> {
           photos.addAll(locPhotos);
           len = photos.length;
         });
+
       } else {
         showSnackbar('Status code is not ok.', 'OK', 30);
         closeModalHUD();
@@ -322,6 +322,38 @@ class ChoiceDialogState extends State<ChoiceDialog> {
   }
 
   Widget build(BuildContext context) {
+
+    return SimpleDialog(
+      title: const Text('What to upload'),
+      children: <Widget>[
+        SimpleDialogOption(
+          child: ListTile(
+            dense: true,
+            leading: Icon(Icons.photo),
+            title: Text('Main Photo'),
+            contentPadding: EdgeInsets.all(1.0),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+            widget.uploadMultipart(widget.fileImage, 1);
+          },
+        ),
+        SimpleDialogOption(
+          child: ListTile(
+            dense: true,
+            leading: Icon(Icons.work),
+            title: Text('Additional Photo'),
+            contentPadding: EdgeInsets.all(1.0),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+            widget.uploadMultipart(widget.fileImage, 0);
+          },
+        ),
+      ],
+    );
+
+    /*
     return SimpleDialog(
       title: Text('Upload'),
       children: <Widget>[
@@ -367,6 +399,6 @@ class ChoiceDialogState extends State<ChoiceDialog> {
           ],
         ),
       ],
-    );
+    );*/
   }
 }

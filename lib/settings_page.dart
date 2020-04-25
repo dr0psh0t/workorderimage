@@ -46,7 +46,8 @@ class SettingsState extends State<SettingsScreen> {
               subtitle: Text('Set Defaults'),
               dense: true,
               onTap: () {
-
+                saveDomain('192.168.1.150:8080');
+                savePath('/joborder/');
               },
             ),
           ],

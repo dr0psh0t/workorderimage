@@ -1,7 +1,5 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'dart:async';
@@ -12,7 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'slide_right_route.dart';
 import 'settings_page.dart';
 import 'mainpage.dart';
-import 'search_joborder.dart';
 
 class LoginScreen extends StatelessWidget {
   @override
@@ -21,7 +18,6 @@ class LoginScreen extends StatelessWidget {
       title: 'Login',
       home: LoginPage(),
       routes: {
-        '/searchpage': (_) => SearchPage(),
         '/mainpage': (_) => MainPage(),
       },
     );
@@ -62,8 +58,6 @@ class LoginPageState extends State<LoginPage> {
   void initState() {
     super.initState();
     showPrefs();
-
-    
   }
 
   bool _obscureText = true;

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'slide_right_route.dart';
-import 'search_joborder.dart';
 import 'qrpage.dart';
 import 'settings_page.dart';
 import 'login_screen.dart';
@@ -31,8 +30,6 @@ class MainPageState extends State<MainPage> {
           IconButton(
             icon: Icon(Icons.http),
             onPressed: () {
-              //Navigator.of(context).pop();
-              //Navigator.push(context, SlideRightRoute(page: McdPage()));
               Navigator.push(context, MaterialPageRoute(builder: (context) => McdPage()));
             },
           ),
@@ -70,7 +67,6 @@ class MainPageState extends State<MainPage> {
               color: Colors.blue,
               shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
                onPressed: () {
-                //Navigator.push(context, SlideRightRoute(page: SearchPage()));
                  List<Joborder> joborders = List();
                  Navigator.push(context, SlideRightRoute(page: JobordersPage(joborders)));
               },

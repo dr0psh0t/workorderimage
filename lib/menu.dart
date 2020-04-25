@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'slide_right_route.dart';
 import 'workorder.dart';
 import 'photo_list.dart';
@@ -7,9 +7,9 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'photo.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'jobtype.dart';
-//import 'search_joborder.dart';
+import 'jobtype.dart';*/
 
+/*
 class MenuPage extends StatefulWidget {
   String customer;
   String joNum;
@@ -71,7 +71,7 @@ class MenuPageState extends State<MenuPage> {
                 color: Colors.blue,
                 shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
                 onPressed: () {
-                  getPhotos({'jid':this.widget.joId.toString(),});
+                  getPhotos({'jid':this.widget.joId.toString()});
                 },
               ),
             ),
@@ -271,4 +271,4 @@ class MenuPageState extends State<MenuPage> {
       return "about to fix the return in login_screen.dart";
     }
   }
-}
+}*/

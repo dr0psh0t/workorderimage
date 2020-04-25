@@ -37,7 +37,30 @@ class QrState extends State<QrPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: AppBar(title: Text('QR Scan'),),
+      appBar: AppBar(
+        title: Text('QR Scan'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.send),
+            onPressed: () {
+              if (qrControl.text.isNotEmpty
+                  && typeControl.text.isNotEmpty
+                  && joControl.text.isNotEmpty) {
+
+                sendQr({
+                  'qr': qrControl.text,
+                  'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
+                  'source': 'mcsa',
+                  'type': typeControl.text,
+                  'joNum': joControl.text,
+                });
+              } else {
+                showSnackbar('Some fields are empty.', 'Required', false);
+              }
+            },
+          ),
+        ],
+      ),
       body: ModalProgressHUD(
         child: buildWidget(),
         inAsyncCall: _sending,
@@ -89,28 +112,59 @@ class QrState extends State<QrPage> {
                       return SimpleDialog(
                         children: <Widget>[
                           SimpleDialogOption(
-                            child: Text('ER'),
+                            //child: Text('ER'),
+                            child: ListTile(
+                              dense: true,
+                              title: Text('ER', style: TextStyle(
+                                fontFamily: 'Sansation-Regular',
+                                color: Colors.black54,
+                                fontSize: 20.0),
+                              ),
+                            ),
                             onPressed: () {
                               setState(() { typeControl.text = 'er'; });
                               Navigator.of(context).pop();
                             },
                           ),
                           SimpleDialogOption(
-                            child: Text('MF'),
+                            //child: Text('MF'),
+                            child: ListTile(
+                              dense: true,
+                              title: Text('MF', style: TextStyle(
+                                fontFamily: 'Sansation-Regular',
+                                color: Colors.black54,
+                                fontSize: 20.0),
+                              ),
+                            ),
                             onPressed: () {
                               setState(() { typeControl.text = 'mf'; });
                               Navigator.of(context).pop();
                             },
                           ),
                           SimpleDialogOption(
-                            child: Text('GM'),
+                            //child: Text('GM'),
+                            child: ListTile(
+                              dense: true,
+                              title: Text('GM', style: TextStyle(
+                                fontFamily: 'Sansation-Regular',
+                                color: Colors.black54,
+                                fontSize: 20.0),
+                              ),
+                            ),
                             onPressed: () {
                               setState(() { typeControl.text = 'gm'; });
                               Navigator.of(context).pop();
                             },
                           ),
                           SimpleDialogOption(
-                            child: Text('CALIB'),
+                            child: ListTile(
+                              dense: true,
+                              title: Text('CALIB', style: TextStyle(
+                                fontFamily: 'Sansation-Regular',
+                                color: Colors.black54,
+                                fontSize: 20.0),
+                              ),
+                            ),
                             onPressed: () {
                               setState(() { typeControl.text = 'calib'; });
                               Navigator.of(context).pop();
@@ -152,6 +206,7 @@ class QrState extends State<QrPage> {
               style: TextStyle(color: Colors.black54),
             ),
           ),
+
           Container(
             margin: const EdgeInsets.only(top: 30.0),
             padding: const EdgeInsets.only(left: 20.0, right: 20.0),
@@ -167,18 +222,29 @@ class QrState extends State<QrPage> {
                       child: Text('Submit', style: TextStyle(color: Colors.white),),
                     ),
                     onPressed: () {
-                      sendQr({
-                        'qr': qrControl.text,
-                        'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
-                        'source': 'mcsa',
-                        'type': typeControl.text,
-                        'joNum': joControl.text,});
+
+                      if (qrControl.text.isNotEmpty
+                          && typeControl.text.isNotEmpty
+                          && joControl.text.isNotEmpty) {
+
+                        sendQr({
+                          'qr': qrControl.text,
+                          'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
+                          'source': 'mcsa',
+                          'type': typeControl.text,
+                          'joNum': joControl.text,
+                        });
+                      } else {
+                        showSnackbar('Some fields are empty.', 'Required', false);
+                      }
+
                     },
                   ),
                 ),
               ],
             ),
           ),
+
         ],
       ),
     );
