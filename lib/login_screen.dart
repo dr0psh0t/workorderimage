@@ -61,6 +61,7 @@ class LoginPageState extends State<LoginPage> {
   }
 
   bool _obscureText = true;
+  bool _remember = false;
 
   void _toggle() {
     setState(() {
@@ -140,9 +141,22 @@ class LoginPageState extends State<LoginPage> {
               style: TextStyle(color: Colors.black54),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 1.0),
+            child: CheckboxListTile(
+              title: Text("Save", style: TextStyle(color: Colors.black54),),
+              value: _remember,
+              onChanged: (newValue) {
+                setState(() {
+                  _remember = newValue;
+                });
+              },
+              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+            ),
+          ),
           Container(
-            margin: const EdgeInsets.only(top: 30.0),
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+            //margin: const EdgeInsets.only(top: 30.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 1.0),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -194,13 +208,30 @@ class LoginPageState extends State<LoginPage> {
       builder: (context) {
         return AlertDialog(
           title: Text('Settings'),
-          content: TextField(
-            controller: _settingsController,
-            decoration: InputDecoration(hintText: "Password"),
-            obscureText: true,
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: _settingsController,
+                decoration: InputDecoration(hintText: "Password"),
+                obscureText: true,
+              ),
+              ListTile(
+                title: Text('Unsave Account'),
+                leading: Icon(Icons.delete),
+                onTap: () {
+                  //  remove account here
+                  setState(() {
+                    controllerPassword.text = '';
+                  });
+                  unsaveAccount();
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
           ),
           actions: <Widget>[
-            new FlatButton(
+            FlatButton(
               child: new Text('OK'),
               onPressed: () {
                 if (_settingsController.text == 'wmdcdev') {
@@ -224,6 +255,11 @@ class LoginPageState extends State<LoginPage> {
         inAsyncCall: _saving,
       ),
     );
+  }
+
+  unsaveAccount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('password', '');
   }
 
   saveCredentials(String username, String password, String sessionId) async {
@@ -263,8 +299,15 @@ class LoginPageState extends State<LoginPage> {
           int start = cookie.indexOf('=')+1;
           int end = cookie.indexOf(';');
 
-          saveCredentials(controllerUsername.text, controllerPassword.text,
-            cookie.substring(start, end),);
+          if (_remember) {
+            saveCredentials(controllerUsername.text, controllerPassword.text,
+              cookie.substring(start, end),);
+          } else {
+            saveCredentials(controllerUsername.text, '',
+              cookie.substring(start, end),);
+          }
+
+
         }
       } else {
         returnMap['reason'] = 'Status code is not OK.';
