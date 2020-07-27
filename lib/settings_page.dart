@@ -84,7 +84,6 @@ class SettingsState extends State<SettingsScreen> {
                       label: 'OK',
                       onPressed: () {
                         // Some code to undo the change!
-                        print('OK BUTTON PRESSED');
                       },
                     ),
                   );

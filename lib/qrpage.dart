@@ -78,7 +78,6 @@ class QrState extends State<QrPage> {
             padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
             child: TextField(
               onChanged: (value) {
-                //print(value);
                 qrControl.text = '';
               },
               controller: qrControl,
@@ -337,7 +336,6 @@ class QrState extends State<QrPage> {
       if (e.runtimeType.toString() == 'SocketException') {
         showSnackbar('Unable to create connection to the server.', 'OK', false);
       } else {
-        print(e.toString());
         showSnackbar(e.toString(), 'OK', false);
       }
     }

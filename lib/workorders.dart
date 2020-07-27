@@ -8,6 +8,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:html_unescape/html_unescape.dart';
+import 'mainpage.dart';
 
 class WorkordersPage extends StatefulWidget {
   List<Workorder> workorders;
@@ -37,7 +38,18 @@ class WorkordersPageState extends State<WorkordersPage> {
 
   Widget buildWidget() {
     return Scaffold(
-      appBar: AppBar(title: Text('Workorders'),),
+      appBar: AppBar(
+        title: Text('Workorders'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pushReplacement(
+                  MaterialPageRoute(builder: (context) => new MainPage()));
+            },
+          ),
+        ],
+      ),
       key: _scaffoldKey,
       body: ListView.separated(
         itemCount: this.widget.len,
@@ -115,33 +127,36 @@ class WorkordersPageState extends State<WorkordersPage> {
       } else if (response.statusCode == 200) {
         closeModalHUD();
 
-        List<dynamic> list = result['woParts'];
-        List<Part> parts = new List();
+        if (result['success'] == null) {
+          List<dynamic> list = result['woParts'];
+          List<Part> parts = new List();
 
-        for (int x = 0; x < list.length; x++) {
-          parts.add(Part(
-            result['woParts'][x]['partId'],
-            result['woParts'][x]['qty'],
-            result['woParts'][x]['isImage'],
-            result['woParts'][x]['description'],
-          ));
+          for (int x = 0; x < list.length; x++) {
+            parts.add(Part(
+              result['woParts'][x]['partId'],
+              result['woParts'][x]['qty'],
+              result['woParts'][x]['isImage'],
+              result['woParts'][x]['description'],
+            ));
+          }
+
+          Navigator.push(context, SlideRightRoute(page: PartsListPage(parts,
+              joId, woId, unescape.convert(
+                  this.widget.workorders[index].scopeGroup).toString())));
+
+        } else if (!result['success']) {
+          showSnackbar(result['reason'], 'OK', false);
         }
-
-        Navigator.push(context, SlideRightRoute(page: PartsListPage(parts,
-            joId, woId, unescape.convert(
-                this.widget.workorders[index].scopeGroup).toString())));
       } else {
         showSnackbar('Status code is not ok.', 'OK', false);
         closeModalHUD();
       }
       return "about to fix the return in menu.dart";
     } catch (e) {
-      print(e.toString());
       closeModalHUD();
       if (e.runtimeType.toString() == 'SocketException') {
         showSnackbar('Unable to create connection to the server.', 'OK', false);
       } else {
-        print(e.toString());
         showSnackbar(e.toString(), 'OK', false);
       }
       return "about to fix the return in login_screen.dart";

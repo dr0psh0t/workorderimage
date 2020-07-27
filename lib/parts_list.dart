@@ -3,6 +3,7 @@ import 'part.dart';
 import 'parts.dart';
 import 'slide_right_route.dart';
 import 'package:html_unescape/html_unescape.dart';
+import 'mainpage.dart';
 
 class PartsListPage extends StatefulWidget {
   List<Part> parts;
@@ -35,7 +36,18 @@ class PartsListState extends State<PartsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Parts'),),
+      appBar: AppBar(
+        title: Text('Parts'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pushReplacement(
+                  MaterialPageRoute(builder: (context) => new MainPage()));
+            },
+          ),
+        ],
+      ),
       body: ListView.separated(
         itemCount: this.widget.len,
         itemBuilder: (BuildContext context, int index) {

@@ -12,6 +12,10 @@ import 'settings_page.dart';
 import 'mainpage.dart';
 
 class LoginScreen extends StatelessWidget {
+
+
+  String name;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -179,6 +183,7 @@ class LoginPageState extends State<LoginPage> {
                       }).then((map) {
                         if (map['success']) {
                           Navigator.of(context).pushReplacementNamed('/mainpage');
+                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => MainPage()));
                         } else {
                           showSnackbar(map['reason'], 'OK', false);
                         }
@@ -302,11 +307,7 @@ class LoginPageState extends State<LoginPage> {
           if (_remember) {
             saveCredentials(controllerUsername.text, controllerPassword.text,
               cookie.substring(start, end),);
-          } else {
-            saveCredentials(controllerUsername.text, '',
-              cookie.substring(start, end),);
           }
-
 
         }
       } else {

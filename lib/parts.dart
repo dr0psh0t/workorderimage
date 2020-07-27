@@ -46,7 +46,15 @@ class PartsState extends State<PartsPage> {
   }
 
   void _choose() async {
-    file = await ImagePicker.pickImage(source: ImageSource.camera,);
+    //file = await ImagePicker.pickImage(source: ImageSource.camera,);
+
+    file = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      //maxHeight: 800 - (800 * 0.25),
+      //maxWidth: 600 - (600 * 0.25),
+      maxHeight: 600,
+      maxWidth: 600,
+    );
 
     if (file != null) {
       showDialog(
@@ -108,26 +116,34 @@ class PartsState extends State<PartsPage> {
     var response = await request.send();
     response.stream.transform(utf8.decoder).listen((value) {
       closeModalHUD();
+
       if (response.statusCode == 200) {
-        String wrongFormat = value.substring(value.indexOf('{'), value.indexOf('}')+1);
-        String correctJson;
+        /*
+        {"data":[{"msg":"Total Number of Date Commit is 2 or more, contact admin for date commit override!"}],"success":true} <html><body>{success:true}</body></html>
 
-        if (wrongFormat.contains('true')) {
-          correctJson = Utils.correctSuccess(wrongFormat);
+        <html><body>{success: false,reason:"Image File to large! Reduce file
+        size to a max of 256kb!"}</body></html>
+
+        ^
+        sample server response above has a bad json format when uploading a
+        parts picture. so we have to check a pattern if it contain "success" string.
+        if true, show your own success message. if false, display the json. */
+
+        var results = [
+          value.contains('{success:true}'),
+          value.contains('{success: true}'),
+          value.contains('{"success": true}'),
+          value.contains('{"success":true}')
+        ];
+
+        if (results[0] || results[1] || results[2] || results[3]) {
+          showSnackbar('Parts picture uploaded.', 'OK', 2);
         } else {
-          correctJson = Utils.correctSuccess(wrongFormat);
-          correctJson = Utils.correctReason(correctJson);
+          showSnackbar(value, 'OK', 20);
         }
 
-        var result = json.decode(correctJson);
-
-        if (result['success']) {
-          showSnackbar('Photo Uploaded!', 'OK', 5);
-        } else {
-          showSnackbar(result['reason'], 'OK', 30);
-        }
       } else {
-        showSnackbar('Request is not ok.', 'OK', 30);
+        showSnackbar('Failed to upload parts. Request is not OK.', 'OK', 30);
       }
     });
   }

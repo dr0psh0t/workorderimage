@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'workorder.dart';
 import 'slide_right_route.dart';
 import 'workorders.dart';
+import 'mainpage.dart';
 
 class JobtypePage extends StatefulWidget {
   List<Workorder> workordersEr = new List();
@@ -51,7 +52,18 @@ class JobtypeState extends State<JobtypePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Jobtype'),),
+      appBar: AppBar(
+        title: Text('Jobtype'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.home),
+            onPressed: () {
+              Navigator.of(context, rootNavigator: true).pushReplacement(
+                  MaterialPageRoute(builder: (context) => new MainPage()));
+            },
+          ),
+        ],
+      ),
       body: ListView.separated(
         itemCount: jobtypes.length,
         itemBuilder: (BuildContext context, int index) {

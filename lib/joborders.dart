@@ -297,7 +297,6 @@ class JobordersState extends State<JobordersPage> {
       if (e.runtimeType.toString() == 'SocketException') {
         showSnackbar('Unable to create connection to the server.', 'OK', false);
       } else {
-        print(e.toString());
         showSnackbar(e.toString(), 'OK', false);
       }
       return "about to fix the return in login_screen.dart";

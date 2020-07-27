@@ -11,9 +11,10 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
-import 'utils.dart';
+import 'package:flutter/services.dart';
 
 class PhotoListPage extends StatefulWidget {
+
   List<Photo> photos;
   int joId;
   int len;
@@ -58,7 +59,16 @@ class PhotoListState extends State<PhotoListPage> {
   }
   
   Future _choose() async {
-    file = await ImagePicker.pickImage(source: ImageSource.camera);
+
+    file = await ImagePicker.pickImage(
+      source: ImageSource.camera,
+      //maxHeight: 800 - (800 * 0.25),
+      //maxWidth: 600 - (600 * 0.25),
+      maxHeight: 600,
+      maxWidth: 600,
+    );
+
+    //file = await ImagePicker.pickImage(source: ImageSource.camera);
 
     if (file != null) {
       showDialog(
@@ -73,26 +83,6 @@ class PhotoListState extends State<PhotoListPage> {
     }
   }
 
-  /*
-  void _choose() async {
-    try {
-      file = await ImagePicker.pickImage(source: ImageSource.camera,);
-
-      if (file != null) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return ChoiceDialog(
-                uploadMultipart: uploadMultipart, fileImage: file,);
-            }
-        );
-      }
-    } catch (e) {
-      showSnackbar(e.toString(), 'Photo Error', 30);
-      print(e.toString());
-    }
-  }*/
-
   void uploadMultipart(File imageFile, int isMain) async {
     setState(() {
       _loading = true;
@@ -106,6 +96,7 @@ class PhotoListState extends State<PhotoListPage> {
     var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
     var uri = Uri.parse('http://'+domain+path+'UploadJoImage');
+    //var uri = Uri.parse('http://192.168.1.30:8080/mcsa/imagepicker');
 
     var request = new http.MultipartRequest("POST", uri);
     request.fields['jid'] = this.widget.joId.toString();
@@ -126,28 +117,34 @@ class PhotoListState extends State<PhotoListPage> {
     var response = await request.send();
     response.stream.transform(utf8.decoder).listen((value) {
       closeModalHUD();
+
       if (response.statusCode == 200) {
         reloadPhotos({'jid':this.widget.joId.toString(),});
 
-        String wrongFormat = value.substring(value.indexOf('{'), value.indexOf('}')+1);
-        String correctJson;
+        /*
+        <html><body>{success: false,reason:"Image File to large! Reduce file
+        size to a max of 256kb!"}</body></html>
 
-        if (wrongFormat.contains('true')) {
-          correctJson = Utils.correctSuccess(wrongFormat);
+        ^
+        sample server response above has a bad json format when uploading a
+        jo picture. so we have to check a pattern if it contains "success" string.
+        if true, show your own success message. if false, display the json. */
+
+        var results = [
+          value.contains('{success:true}'),
+          value.contains('{success: true}'),
+          value.contains('{"success": true}'),
+          value.contains('{"success":true}')
+        ];
+
+        if (results[0] || results[1] || results[2] || results[3]) {
+          showSnackbar('Joborder picture uploaded.', 'OK', 2);
         } else {
-          correctJson = Utils.correctSuccess(wrongFormat);
-          correctJson = Utils.correctReason(correctJson);
+          showSnackbar(value, 'OK', 20);
         }
 
-        var result = json.decode(correctJson);
-
-        if (result['success']) {
-          showSnackbar('Photo Uploaded!', 'OK', 5);
-        } else {
-          showSnackbar(result['reason'], 'OK', 30);
-        }
       } else {
-        showSnackbar('Request is not ok.', 'OK', 30);
+        showSnackbar('Failed to upload parts. Request is not OK.', 'OK', 30);
       }
     });
   }
@@ -157,18 +154,14 @@ class PhotoListState extends State<PhotoListPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Photos'),
-        /*
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.home),
             onPressed: () {
-              Navigator.of(context).pop();
-              //Navigator.push(context, SlideRightRoute(page: SearchPage()));
-
-              Navigator.pushReplacement(context, SlideRightRoute(page: SearchPage()));
+              Navigator.of(context).popUntil((route) => route.isFirst);
             },
           ),
-        ],*/
+        ],
       ),
       body: ListView.separated(
         itemCount: len,
@@ -218,6 +211,9 @@ class PhotoListState extends State<PhotoListPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     return ModalProgressHUD(
       child: buildWidget(),
       inAsyncCall: _loading,
@@ -282,16 +278,15 @@ class PhotoListState extends State<PhotoListPage> {
         showSnackbar('Status code is not ok.', 'OK', 30);
         closeModalHUD();
       }
-      //return "about to fix the return in menu.dart";
+
     } catch (e) {
       closeModalHUD();
+
       if (e.runtimeType.toString() == 'SocketException') {
         showSnackbar('Unable to create connection to the server.', 'OK', 30);
       } else {
-        print(e.toString());
         showSnackbar(e.toString(), 'OK', 30);
       }
-      //return "about to fix the return in login_screen.dart";
     }
   }
 }
@@ -353,52 +348,5 @@ class ChoiceDialogState extends State<ChoiceDialog> {
       ],
     );
 
-    /*
-    return SimpleDialog(
-      title: Text('Upload'),
-      children: <Widget>[
-        RadioListTile(
-          value: 1,
-          groupValue: selectedRadioTile,
-          title: Text('Main Image'),
-          activeColor: Colors.green,
-          onChanged: (val) {
-            setSelectedRadio(val);
-          },
-        ),
-        RadioListTile(
-          value: 2,
-          groupValue: selectedRadioTile,
-          title: Text('Additional Image'),
-          activeColor: Colors.green,
-          onChanged: (val) {
-            setSelectedRadio(val);
-          },
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            FlatButton(
-              child: Text('Upload', style: TextStyle(color: Colors.blue),),
-              onPressed: () {
-                if (selectedRadioTile == 1) { //  main image
-                  widget.uploadMultipart(widget.fileImage, 1);
-                  Navigator.of(context).pop();
-                } else if (selectedRadioTile == 2) { //  extra image
-                  widget.uploadMultipart(widget.fileImage, 0);
-                  Navigator.of(context).pop();
-                }
-              },
-            ),
-            FlatButton(
-              child: Text('Close', style: TextStyle(color: Colors.blue),),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-      ],
-    );*/
   }
 }
