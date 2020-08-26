@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AndroidLayouts">
+    <shared>
+      <config />
+    </shared>
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="a124f651-f8d9-456d-8d05-1f3cbc4a36ed" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/complianceratingpage.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/employeepage.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/model/employee.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/.filecache" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/.filecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/app.dill" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/app.dill" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/arm64-v8a/app.so" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/arm64-v8a/app.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/armeabi-v7a/app.so" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/armeabi-v7a/app.so" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.d" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.d" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.stamp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/.filecache" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/.filecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/app.dill" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/app.dill" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.d" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.stamp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.packages" beforeDir="false" afterPath="$PROJECT_DIR$/.packages" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/joborders.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/joborders.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/jobtype.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/jobtype.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/login_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/mainpage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/mainpage.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/parts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/parts.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/parts_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/parts_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/photo_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/photo_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/qrpage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/qrpage.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/settings_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/settings_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/workorders.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/workorders.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -53,7 +52,7 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../StudioProjects/Mobilecsa" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>

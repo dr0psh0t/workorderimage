@@ -51,7 +51,6 @@ class MainPageState extends State<MainPage> {
       ),
       key: _scaffoldKey,
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

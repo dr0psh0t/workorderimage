@@ -198,7 +198,7 @@ class JobordersState extends State<JobordersPage> {
 
       Navigator.push(context, SlideRightRoute(
           page: JobtypePage(workordersEr, workordersMf, workordersCalib,
-              workordersGm, this.widget.joborders[index].joId)));
+            workordersGm, this.widget.joborders[index].joId,)));
 
     } else {
       showSnackbar(map['reason'], 'label', false);

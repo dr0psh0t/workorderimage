@@ -12,10 +12,6 @@ import 'settings_page.dart';
 import 'mainpage.dart';
 
 class LoginScreen extends StatelessWidget {
-
-
-  String name;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -74,6 +70,9 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Widget buildWidget() {
+    var bImgHeight = MediaQuery.of(context).size.height * 0.33;
+    var imgPos = (bImgHeight / 2) - (bImgHeight * 0.4);
+
     return Container(
       height: MediaQuery.of(context).size.height,
       decoration: BoxDecoration(color: Colors.white,),
@@ -84,7 +83,7 @@ class LoginPageState extends State<LoginPage> {
             children: <Widget>[
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: 220.0,
+                height: bImgHeight,
                 decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.fill,
@@ -93,7 +92,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
               ),
               Positioned(
-                top: 30.0,
+                top: imgPos,
                 child: Container(
                   height: 159.0,
                   width: 129.0,
@@ -107,7 +106,7 @@ class LoginPageState extends State<LoginPage> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 40.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 30.0),
             child: TextField(
               onChanged: (value) {},
               controller: controllerUsername,
@@ -145,22 +144,9 @@ class LoginPageState extends State<LoginPage> {
               style: TextStyle(color: Colors.black54),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 1.0),
-            child: CheckboxListTile(
-              title: Text("Save", style: TextStyle(color: Colors.black54),),
-              value: _remember,
-              onChanged: (newValue) {
-                setState(() {
-                  _remember = newValue;
-                });
-              },
-              controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
-            ),
-          ),
           Container(
             //margin: const EdgeInsets.only(top: 30.0),
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 1.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
             child: Row(
               children: <Widget>[
                 Expanded(
@@ -194,11 +180,33 @@ class LoginPageState extends State<LoginPage> {
               ],
             ),
           ),
-          FlatButton(
-            onPressed: () {
-              displayDialog(context);
-            },
-            child: Text("Settings", style: TextStyle(color: Colors.black54,),),
+          Container(
+            padding: const EdgeInsets.only(left: 1.0, right: 1.0, top: 10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Expanded(
+                  child: CheckboxListTile(
+                    title: Text("Save", style: TextStyle(color: Colors.black54),),
+                    value: _remember,
+                    onChanged: (newValue) {
+                      setState(() {
+                        _remember = newValue;
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,  //  <-- leading Checkbox
+                  ),
+                ),
+                Expanded(
+                    child: FlatButton(
+                      child: Text("Settings", style: TextStyle(color: Colors.black54,),),
+                      onPressed: () {
+                        displayDialog(context);
+                      },
+                    ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -5,20 +5,14 @@ import 'workorders.dart';
 import 'mainpage.dart';
 
 class JobtypePage extends StatefulWidget {
-  List<Workorder> workordersEr = new List();
-  List<Workorder> workordersMf = new List();
-  List<Workorder> workordersCalib = new List();
-  List<Workorder> workordersGm = new List();
+
+  List<Workorder> workordersEr;
+  List<Workorder> workordersMf;
+  List<Workorder> workordersCalib;
+  List<Workorder> workordersGm;
   int joId;
 
-  JobtypePage(List<Workorder> woEr, List<Workorder> woMf,
-      List<Workorder> woCalib, List<Workorder> woGm, int joId) {
-    workordersEr = woEr;
-    workordersMf = woMf;
-    workordersCalib = woCalib;
-    workordersGm = woGm;
-    this.joId = joId;
-  }
+  JobtypePage(this.workordersEr, this.workordersMf, this.workordersCalib, this.workordersGm, this.joId);
 
   @override
   JobtypeState createState() => new JobtypeState();
