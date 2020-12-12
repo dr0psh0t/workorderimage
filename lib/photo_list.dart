@@ -347,6 +347,5 @@ class ChoiceDialogState extends State<ChoiceDialog> {
         ),
       ],
     );
-
   }
 }

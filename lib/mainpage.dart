@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:workorderimage/employeepage.dart';
 import 'slide_right_route.dart';
 import 'qrpage.dart';
 import 'settings_page.dart';
@@ -96,78 +95,8 @@ class MainPageState extends State<MainPage> {
                 ),
               ],
             ),
-            //Padding(padding: EdgeInsets.only(top: 20.0,),
-            /*Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                      Icon(Icons.scanner, color: Colors.white,),
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                      Text(' Five S Audit ', style: TextStyle(color: Colors.white),),
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                    ],
-                  ),
-                  color: Colors.blue,
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
-                  onPressed: () {
-                    Navigator.pushReplacement(context, SlideRightRoute(page: EmployeePage()));
-                    //Navigator.of(context).pushReplacementNamed('/employeepage');
-                  },
-                ),
-              ],
-            ),*/
           ],
         ),
-
-        /*
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            RaisedButton(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                  Icon(Icons.work, color: Colors.white,),
-                  Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                  Text('Joborder Parts', style: TextStyle(color: Colors.white),),
-                  Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                ],
-              ),
-              color: Colors.blue,
-              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
-               onPressed: () {
-                 List<Joborder> joborders = List();
-                 Navigator.push(context, SlideRightRoute(page: JobordersPage(joborders)));
-              },
-            ),
-            Padding(padding: EdgeInsets.only(left: 10.0, right: 10.0),),
-            RaisedButton(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                  Icon(Icons.scanner, color: Colors.white,),
-                  Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                  Text('  QR Scanner  ', style: TextStyle(color: Colors.white),),
-                  Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                ],
-              ),
-              color: Colors.blue,
-              shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
-              onPressed: () {
-                //Navigator.pushReplacement(context, SlideRightRoute(page: QrPage()));
-                Navigator.push(context, SlideRightRoute(page: QrPage()));
-              },
-            ),
-          ],
-        ),
-        */
-
       ),
     );
   }

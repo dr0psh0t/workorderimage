@@ -67,49 +67,4 @@ class Utils {
         }
     );
   }
-
-  /*
-  displayDialog(BuildContext context, var _settingsController) async {
-    return showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Settings'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              TextField(
-                controller: _settingsController,
-                decoration: InputDecoration(hintText: "Password"),
-                obscureText: true,
-              ),
-              ListTile(
-                title: Text('Unsave Account'),
-                leading: Icon(Icons.delete),
-                onTap: () {
-                  //  remove account here
-                  setState(() {
-                    controllerPassword.text = '';
-                  });
-                  unsaveAccount();
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-              child: new Text('OK'),
-              onPressed: () {
-                if (_settingsController.text == 'wmdcdev') {
-                  _settingsController.text = '';
-                  Navigator.of(context).pop();
-                  Navigator.push(context, SlideRightRoute(page: SettingsScreen()));
-                }
-              },
-            )
-          ],
-        );
-      });
-  }*/
 }

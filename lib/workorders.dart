@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+import 'utils.dart';
 import 'package:flutter/material.dart';
 import 'parts_list.dart';
 import 'part.dart';
@@ -26,6 +29,7 @@ class WorkordersPage extends StatefulWidget {
 }
 
 class WorkordersPageState extends State<WorkordersPage> {
+
   bool _loading = false;
   final _scaffoldKey =GlobalKey<ScaffoldState>();
   var unescape;
@@ -34,6 +38,14 @@ class WorkordersPageState extends State<WorkordersPage> {
   void initState() {
     super.initState();
     unescape = new HtmlUnescape();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ModalProgressHUD(
+      child: buildWidget(),
+      inAsyncCall: _loading,
+    );
   }
 
   Widget buildWidget() {
@@ -60,8 +72,41 @@ class WorkordersPageState extends State<WorkordersPage> {
             subtitle: Text(unescape.convert(this.widget.workorders[index].scopeOfWork).toString()),
             trailing: this.widget.workorders[index].isPartsReq == 1 ? Icon(Icons.arrow_forward_ios) : null,
             onTap: () {
-              getParts({'woId': this.widget.workorders[index].joWorkId.toString()},
-                  this.widget.joId, this.widget.workorders[index].joWorkId, index);
+              var joId = this.widget.joId;
+              var woId = this.widget.workorders[index].joWorkId;
+
+              getParts({'woId': woId.toString()}, joId, woId, index).then((result) {
+                var map = json.decode(result);
+
+                if (map['success']) {
+                  var totalCount = map['data']['totalCount'];
+
+                  if (totalCount > 0) {
+                    var map2 = map['data']['woParts'];
+
+                    List<dynamic> list = map['data']['woParts'];
+                    List<Part> parts = List();
+
+                    for (int x = 0; x < list.length; x++) {
+                      parts.add(Part(
+                        map2[x]['partId'],
+                        map2[x]['qty'],
+                        map2[x]['isImage'],
+                        map2[x]['description'],
+                      ));
+                    }
+
+                    Navigator.push(context, SlideRightRoute(page: PartsListPage(
+                        parts, joId, woId, unescape.convert(
+                        this.widget.workorders[index].scopeGroup).toString())));
+
+                  } else {
+                    Utils.showSnackbar('No Parts', 'Empty', _scaffoldKey);
+                  }
+                } else {
+                  Utils.showSnackbar(map['reason'], 'Fail', _scaffoldKey);
+                }
+              });
             },
           );
         },
@@ -71,95 +116,48 @@ class WorkordersPageState extends State<WorkordersPage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ModalProgressHUD(
-      child: buildWidget(),
-      inAsyncCall: _loading,
-    );
-  }
-
-  void closeModalHUD() {
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  void showSnackbar(String msg, String label, bool popable) {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-          label: label,
-          onPressed: () {
-            if (popable) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
   Future<String> getParts(var params, int joId, int woId, int index) async {
+
+    setState(() { _loading = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
 
+    if (domain == null || path == null || sessionId == null) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    if (domain.isEmpty || path.isEmpty || sessionId.isEmpty) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
     try {
-      setState(() {
-        _loading =true;
-      });
 
-      final uri = Uri.http(domain, path+'GetWoPartsList', params);
-
+      final uri = Uri.http(domain, path + 'GetWoPartsList', params);
       var response = await http.post(uri, headers: {
-        'Accept':'application/json',
-        'Cookie':'JSESSIONID='+sessionId,
-      });
-
-      var result = json.decode(response.body);
+        'Accept': 'application/json',
+        'Cookie': 'JSESSIONID=' + sessionId,
+      }).timeout(const Duration(seconds: 5),);
 
       if (response == null) {
-        showSnackbar('Unable to create response object. Cause: null.', 'OK', false);
-        closeModalHUD();
+        return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
-        closeModalHUD();
-
-        if (result['success'] == null) {
-          List<dynamic> list = result['woParts'];
-          List<Part> parts = new List();
-
-          for (int x = 0; x < list.length; x++) {
-            parts.add(Part(
-              result['woParts'][x]['partId'],
-              result['woParts'][x]['qty'],
-              result['woParts'][x]['isImage'],
-              result['woParts'][x]['description'],
-            ));
-          }
-
-          Navigator.push(context, SlideRightRoute(page: PartsListPage(parts,
-              joId, woId, unescape.convert(
-                  this.widget.workorders[index].scopeGroup).toString())));
-
-        } else if (!result['success']) {
-          showSnackbar(result['reason'], 'OK', false);
-        }
+        return '{"success": true, "data": ${response.body.replaceAll("\n", "").trim()}}';
       } else {
-        showSnackbar('Status code is not ok.', 'OK', false);
-        closeModalHUD();
+        return '{"success": false, "reason": "Failed to get workorders."}';
       }
-      return "about to fix the return in menu.dart";
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
     } catch (e) {
-      closeModalHUD();
-      if (e.runtimeType.toString() == 'SocketException') {
-        showSnackbar('Unable to create connection to the server.', 'OK', false);
-      } else {
-        showSnackbar(e.toString(), 'OK', false);
-      }
-      return "about to fix the return in login_screen.dart";
+      return '{"success": false, "reason": "Cannot search at this time."}';
+    } finally {
+      setState(() { _loading = false; });
     }
   }
 }

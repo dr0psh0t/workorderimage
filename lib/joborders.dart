@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -87,9 +88,31 @@ class JobordersState extends State<JobordersPage> {
                           IconButton(
                             icon: Icon(Icons.photo),
                             onPressed: () {
+
+                              var jid = this.widget.joborders[index].joId.toString();
+                              var jonum = this.widget.joborders[index].joNum;
+
                               getPhotos({
-                                'jid': this.widget.joborders[index].joId.toString(),
-                                'joNum': this.widget.joborders[index].joNum,
+                                'jid': jid,
+                                'joNum': jonum,
+                              }).then((result) {
+
+                                var map = json.decode(result);
+                                var map2 = map['data']['images'];
+
+                                List<dynamic> list = map['data']['images'];
+                                List<Photo> photos = List();
+
+                                for (int x = 0; x < list.length; x++) {
+                                  photos.add(Photo(
+                                    map2[x]['imageId'],
+                                    (map2[x]['filename'].toString().isEmpty ? 'No filename' :map2[x]['filename']),
+                                    map2[x]['isMfImage'],
+                                  ));
+                                }
+
+                                Navigator.push(context, SlideRightRoute(page: PhotoListPage(
+                                    photos, int.parse(jid), jonum)));
                               });
                             },
                           ),
@@ -121,9 +144,31 @@ class JobordersState extends State<JobordersPage> {
                                     ),
                                     onPressed: () {
                                       Navigator.of(context).pop();
+
+                                      var jid = this.widget.joborders[index].joId.toString();
+                                      var jonum = this.widget.joborders[index].joNum;
+
                                       getPhotos({
-                                        'jid': this.widget.joborders[index].joId.toString(),
-                                        'joNum': this.widget.joborders[index].joNum,
+                                        'jid': jid,
+                                        'joNum': jonum,
+                                      }).then((result) {
+
+                                        var map = json.decode(result);
+                                        var map2 = map['data']['images'];
+
+                                        List<dynamic> list = map['data']['images'];
+                                        List<Photo> photos = List();
+
+                                        for (int x = 0; x < list.length; x++) {
+                                          photos.add(Photo(
+                                            map2[x]['imageId'],
+                                            (map2[x]['filename'].toString().isEmpty ? 'No filename' :map2[x]['filename']),
+                                            map2[x]['isMfImage'],
+                                          ));
+                                        }
+
+                                        Navigator.push(context, SlideRightRoute(page: PhotoListPage(
+                                            photos, int.parse(jid), jonum)));
                                       });
                                     },
                                   ),
@@ -203,57 +248,47 @@ class JobordersState extends State<JobordersPage> {
   }
 
   Future<String> getPhotos(var params) async {
+
+    setState(() { _loading = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
 
+    if (domain == null || path == null || sessionId == null) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    if (domain.isEmpty || path.isEmpty || sessionId.isEmpty) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
     try {
-      setState(() { _loading = true; });
 
       final uri = Uri.http(domain, path+'GetJoImageList', params);
-
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
-      });
-
-      var result = json.decode(response.body);
+      }).timeout(const Duration(seconds: 5),);
 
       if (response == null) {
-        Utils.showSnackbar('Unable to create response object. Cause: null.', 'OK', _scaffoldKey);
-        setState(() { _loading = false; });
+        return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
-        setState(() { _loading = false; });
-
-        List<dynamic> list = result['images'];
-        List<Photo> photos = new List();
-
-        for (int x = 0; x < list.length; x++) {
-          photos.add(Photo(
-            result['images'][x]['imageId'],
-            (result['images'][x]['filename'].toString().isEmpty ? 'No filename' : result['images'][x]['filename']),
-            result['images'][x]['isMfImage'],
-          ));
-        }
-
-        Navigator.push(context, SlideRightRoute(page: PhotoListPage(
-            photos, int.parse(params['jid']), params['joNum'])));
-
+        return '{"success": true, "data": ${response.body.replaceAll("\n", "").trim()}}';
       } else {
-        Utils.showSnackbar('Status code is not ok.', 'OK', _scaffoldKey);
-        setState(() { _loading = false; });
+        return '{"success": false, "reason": "Failed to get workorders."}';
       }
-      return "about to fix the return in menu.dart";
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
     } catch (e) {
+      return '{"success": false, "reason": "Cannot get photos at this time."}';
+    } finally {
       setState(() { _loading = false; });
-      if (e.runtimeType.toString() == 'SocketException') {
-        Utils.showSnackbar('Unable to create connection to the server.', 'OK', _scaffoldKey);
-      } else {
-        Utils.showSnackbar(e.toString(), 'OK', _scaffoldKey);
-      }
-      return "about to fix the return in login_screen.dart";
     }
   }
 
@@ -266,12 +301,12 @@ class JobordersState extends State<JobordersPage> {
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
 
-    if (domain == null || path == null) {
+    if (domain == null || path == null || sessionId == null) {
       setState(() { _loading = false; });
       return '{"success": false, "reason": "Server address error."}';
     }
 
-    if (domain.isEmpty || path.isEmpty) {
+    if (domain.isEmpty || path.isEmpty || sessionId.isEmpty) {
       setState(() { _loading = false; });
       return '{"success": false, "reason": "Server address error."}';
     }
@@ -282,20 +317,22 @@ class JobordersState extends State<JobordersPage> {
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
-      });
+      }).timeout(const Duration(seconds: 5),);
 
       if (response == null) {
         return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
-        return '{"success": true, "jsonData": ${response.body}}';
+        return '{"success": true, "jsonData": ${response.body.replaceAll("\n", "").trim()}}';
       } else {
         return '{"success": false, "reason": "Failed to get workorders."}';
       }
 
     } on SocketException {
       return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
     } catch (e) {
-      return '{"success": false, "reason": "Cannot login at this time."}';
+      return '{"success": false, "reason": "Cannot get workorders at this time."}';
     } finally {
       setState(() { _loading = false; });
     }
@@ -337,23 +374,35 @@ class JobordersState extends State<JobordersPage> {
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
 
+    if (domain == null || path == null || sessionId == null) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    if (domain.isEmpty || path.isEmpty || sessionId.isEmpty) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
     try {
 
       final uri = new Uri.http(domain, path+'GetJobOrderList', params,);
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
-      });
+      }).timeout(const Duration(seconds: 5),);
 
       if (response == null) {
         return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
-        return '{"success": true, "data": ${response.body}}';
+        return '{"success": true, "data": ${response.body.replaceAll("\n", "").trim()}}';
       } else {
         return '{"success": false, "reason": "Searching failed."}';
       }
     } on SocketException {
       return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
     } catch (e) {
       return '{"success": false, "reason": "Cannot search at this time."}';
     } finally {

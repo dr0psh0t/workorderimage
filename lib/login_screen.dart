@@ -288,7 +288,8 @@ class LoginPageState extends State<LoginPage> {
     try {
 
       final uri = new Uri.http(domain, path+'Authenticate', params,);
-      var response = await http.post(uri, headers: {'Accept':'application/json'});
+      var response = await http.post(uri, headers: {'Accept':'application/json'})
+          .timeout(const Duration(seconds: 5),);
 
       String cookie = response.headers['set-cookie'];
 
@@ -296,24 +297,13 @@ class LoginPageState extends State<LoginPage> {
         return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
         return '{"body":${response.body.replaceAll("\n", "").trim()}, "cookie":\"$cookie\"}';
-
-        /*
-        var result = json.decode(response.body);
-        returnMap['success'] = result['success'];
-        returnMap['reason'] = result['reason'];
-        if (result['success']) {
-          int start = cookie.indexOf('=')+1;
-          int end = cookie.indexOf(';');
-          if (_remember) {
-            saveCredentials(controllerUsername.text, controllerPassword.text,
-              cookie.substring(start, end),);
-          }
-        }*/
       } else {
         return '{"success": false, "reason": "Login failed."}';
       }
     } on SocketException {
       return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
     } catch (e) {
       return '{"success": false, "reason": "Cannot login at this time."}';
     } finally {
