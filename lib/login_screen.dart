@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:workorderimage/utils.dart';
 import 'slide_right_route.dart';
 import 'settings_page.dart';
 import 'mainpage.dart';
@@ -31,27 +31,19 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   bool _saving = false;
+  bool _obscureText = true;
+  bool _remember = false;
+
   final _scaffoldKey =GlobalKey<ScaffoldState>();
 
   final controllerUsername =TextEditingController();
   final controllerPassword =TextEditingController();
+  final _settingsController = TextEditingController();
 
   void showPrefs() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     controllerUsername.text =prefs.getString('username');
     controllerPassword.text =prefs.getString('password');
-  }
-
-  void toast(String msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
-      timeInSecForIos: 1,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-      fontSize: 16.0,
-    );
   }
 
   @override
@@ -60,16 +52,23 @@ class LoginPageState extends State<LoginPage> {
     showPrefs();
   }
 
-  bool _obscureText = true;
-  bool _remember = false;
-
   void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
+    setState(() { _obscureText = !_obscureText; });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: _scaffoldKey,
+      body: ModalProgressHUD(
+        child: buildWidget(),
+        inAsyncCall: _saving,
+      ),
+    );
   }
 
   Widget buildWidget() {
+
     var bImgHeight = MediaQuery.of(context).size.height * 0.33;
     var imgPos = (bImgHeight / 2) - (bImgHeight * 0.4);
 
@@ -160,18 +159,29 @@ class LoginPageState extends State<LoginPage> {
                     ),
                     onPressed: () {
                       if (controllerPassword.text.isEmpty) {
-                        getDialog('Password is required.');
+                        Utils.getDialog('Password is required.', context);
                       }
 
                       return login({
                         'username': controllerUsername.text,
                         'password': controllerPassword.text,
-                      }).then((map) {
-                        if (map['success']) {
+                      }).then((result) {
+                        var map = json.decode(result);
+
+                        if (map['body']['success']) {
+                          var cookie = map['cookie'];
+
+                          int start = cookie.indexOf('=')+1;
+                          int end = cookie.indexOf(';');
+
+                          if (_remember) {
+                            saveCredentials(controllerUsername.text, controllerPassword.text,
+                              cookie.substring(start, end),);
+                          }
+
                           Navigator.of(context).pushReplacementNamed('/mainpage');
-                          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => MainPage()));
                         } else {
-                          showSnackbar(map['reason'], 'OK', false);
+                          Utils.showSnackbar(map['reason'], 'OK', _scaffoldKey);
                         }
                       });
                     },
@@ -212,8 +222,6 @@ class LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-  TextEditingController _settingsController = TextEditingController();
 
   displayDialog(BuildContext context) async {
     return showDialog(
@@ -259,15 +267,58 @@ class LoginPageState extends State<LoginPage> {
       });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: ModalProgressHUD(
-        child: buildWidget(),
-        inAsyncCall: _saving,
-      ),
-    );
+  Future<String> login(var params) async {
+
+    setState(() { _saving = true; });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String domain = prefs.getString('domain');
+    String path = prefs.getString('path');
+
+    if (domain == null || path == null) {
+      setState(() { _saving = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    if (domain.isEmpty || path.isEmpty) {
+      setState(() { _saving = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    try {
+
+      final uri = new Uri.http(domain, path+'Authenticate', params,);
+      var response = await http.post(uri, headers: {'Accept':'application/json'});
+
+      String cookie = response.headers['set-cookie'];
+
+      if (response == null) {
+        return '{"success": false, "reason": "The server took long to respond."}';
+      } else if (response.statusCode == 200) {
+        return '{"body":${response.body.replaceAll("\n", "").trim()}, "cookie":\"$cookie\"}';
+
+        /*
+        var result = json.decode(response.body);
+        returnMap['success'] = result['success'];
+        returnMap['reason'] = result['reason'];
+        if (result['success']) {
+          int start = cookie.indexOf('=')+1;
+          int end = cookie.indexOf(';');
+          if (_remember) {
+            saveCredentials(controllerUsername.text, controllerPassword.text,
+              cookie.substring(start, end),);
+          }
+        }*/
+      } else {
+        return '{"success": false, "reason": "Login failed."}';
+      }
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
+    } catch (e) {
+      return '{"success": false, "reason": "Cannot login at this time."}';
+    } finally {
+      setState(() { _saving = false; });
+    }
   }
 
   unsaveAccount() async {
@@ -280,97 +331,5 @@ class LoginPageState extends State<LoginPage> {
     await prefs.setString("username", username);
     await prefs.setString("password", password);
     await prefs.setString("sessionId", sessionId);
-  }
-
-  Future<Map> login(var params) async {
-
-    setState(() { _saving = true; });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String domain = prefs.getString('domain');
-    String path = prefs.getString('path');
-
-    var returnMap = new Map();
-    returnMap['success'] = false;
-
-    try {
-
-      final uri = new Uri.http(domain, path+'Authenticate', params,);
-      var response = await http.post(uri, headers: {'Accept':'application/json'});
-
-      String cookie = response.headers['set-cookie'];
-
-      if (response == null) {
-        returnMap['reason'] = 'No response received. Cause: null.';
-      } else if (response.statusCode == 200) {
-        var result = json.decode(response.body);
-
-        returnMap['success'] = result['success'];
-        returnMap['reason'] = result['reason'];
-
-        if (result['success']) {
-          int start = cookie.indexOf('=')+1;
-          int end = cookie.indexOf(';');
-
-          if (_remember) {
-            saveCredentials(controllerUsername.text, controllerPassword.text,
-              cookie.substring(start, end),);
-          }
-
-        }
-      } else {
-        returnMap['reason'] = 'Status code is not OK.';
-      }
-
-      setState(() { _saving = false; });
-      return returnMap;
-
-    } on SocketException {
-
-      setState(() {_saving = false; });
-      returnMap['reason'] = 'Unable to create connection to the server.';
-      return returnMap;
-
-    } catch (e) {
-
-      setState(() { _saving = false; });
-      returnMap['reason'] = e.toString();
-      return returnMap;
-    }
-  }
-
-  void showSnackbar(String msg, String label, bool popable) {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-          label: label,
-          onPressed: () {
-            if (popable) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  void getDialog(String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(message),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      }
-    );
   }
 }

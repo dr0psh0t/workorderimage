@@ -9,22 +9,19 @@
     <list default="true" id="a124f651-f8d9-456d-8d05-1f3cbc4a36ed" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/.filecache" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/.filecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/app.dill" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/app.dill" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/arm64-v8a/app.so" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/arm64-v8a/app.so" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/armeabi-v7a/app.so" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/armeabi-v7a/app.so" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.d" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/040d1a69b4356e612ffb62d634b46e82/kernel_snapshot.stamp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/.filecache" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/.filecache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/app.dill" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/app.dill" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.d" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.d" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.stamp" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/flutter_build/6033fbffca8ca20fe0204f2a85b50bd4/kernel_snapshot.stamp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-hdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-mdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" beforeDir="false" afterPath="$PROJECT_DIR$/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/joborders.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/joborders.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/jobtype.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/jobtype.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/login_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/login_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/mainpage.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/mainpage.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils.dart" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -36,6 +33,9 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="3056d8997d95" />
+  <component name="FavoritesManager">
+    <favorites_list name="workorderimage" />
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -57,6 +57,9 @@
     <property name="show.migrate.to.gradle.popup" value="false" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\wmdcdev_projects\FlutterProjects\workorder_image\workorderimage\lib" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\wmdcdev_projects\FlutterProjects\workorder_image\workorderimage\lib" />
       <recent name="D:\wmdcdev_projects\FlutterProjects\workorder_image\workorderimage\lib\model" />

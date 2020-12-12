@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'joborder.dart';
 import 'dart:convert';
@@ -10,6 +12,7 @@ import 'photo.dart';
 import 'photo_list.dart';
 import 'workorder.dart';
 import 'jobtype.dart';
+import 'utils.dart';
 
 class JobordersPage extends StatefulWidget {
   List<Joborder> joborders;
@@ -24,12 +27,11 @@ class JobordersPage extends StatefulWidget {
 }
 
 class JobordersState extends State<JobordersPage> {
-  var unescape;
-
   TextEditingController searchController = TextEditingController();
 
   bool _loading =false;
   final _scaffoldKey =GlobalKey<ScaffoldState>();
+  var unescape;
 
   @override
   void initState() {
@@ -97,7 +99,7 @@ class JobordersState extends State<JobordersPage> {
                               getWorkorders({
                                 'joId': this.widget.joborders[index].joId.toString()
                               }).then((map) {
-                                gotoWorkorders(map, index);
+                                gotoWorkorders(json.decode(map), index);
                               });
                             },
                           ),
@@ -105,45 +107,45 @@ class JobordersState extends State<JobordersPage> {
                       ),
                       onTap: () {
                         showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return SimpleDialog(
-                              title: const Text('Choose'),
-                              children: <Widget>[
-                                SimpleDialogOption(
-                                  child: ListTile(
-                                    dense: true,
-                                    leading: Icon(Icons.photo),
-                                    title: Text('Photo'),
-                                    contentPadding: EdgeInsets.all(1.0),
+                            context: context,
+                            builder: (BuildContext context) {
+                              return SimpleDialog(
+                                title: const Text('Choose'),
+                                children: <Widget>[
+                                  SimpleDialogOption(
+                                    child: ListTile(
+                                      dense: true,
+                                      leading: Icon(Icons.photo),
+                                      title: Text('Photo'),
+                                      contentPadding: EdgeInsets.all(1.0),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      getPhotos({
+                                        'jid': this.widget.joborders[index].joId.toString(),
+                                        'joNum': this.widget.joborders[index].joNum,
+                                      });
+                                    },
                                   ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    getPhotos({
-                                      'jid': this.widget.joborders[index].joId.toString(),
-                                      'joNum': this.widget.joborders[index].joNum,
-                                    });
-                                  },
-                                ),
-                                SimpleDialogOption(
-                                  child: ListTile(
-                                    dense: true,
-                                    leading: Icon(Icons.work),
-                                    title: Text('Workorders'),
-                                    contentPadding: EdgeInsets.all(1.0),
+                                  SimpleDialogOption(
+                                    child: ListTile(
+                                      dense: true,
+                                      leading: Icon(Icons.work),
+                                      title: Text('Workorders'),
+                                      contentPadding: EdgeInsets.all(1.0),
+                                    ),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                      getWorkorders({
+                                        'joId': this.widget.joborders[index].joId.toString()
+                                      }).then((map) {
+                                        gotoWorkorders(json.decode(map), index);
+                                      });
+                                    },
                                   ),
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                    getWorkorders({
-                                      'joId': this.widget.joborders[index].joId.toString()
-                                    }).then((map) {
-                                      gotoWorkorders(map, index);
-                                    });
-                                  },
-                                ),
-                              ],
-                            );
-                          }
+                                ],
+                              );
+                            }
                         );
                       },
                     );
@@ -164,24 +166,21 @@ class JobordersState extends State<JobordersPage> {
   void gotoWorkorders(var map, int index) {
 
     if (map['success']) {
-      var result = json.decode(map['jsonData']);
-
-      List<dynamic> list = result['jobOrderWorks'];
-      List<Workorder> workordersEr = new List();
-      List<Workorder> workordersMf = new List();
-      List<Workorder> workordersCalib = new List();
-      List<Workorder> workordersGm = new List();
+      List<dynamic> list = map['jsonData']['jobOrderWorks'];
+      List<Workorder> workordersEr = List();
+      List<Workorder> workordersMf = List();
+      List<Workorder> workordersCalib = List();
+      List<Workorder> workordersGm = List();
 
       for (int x = 0; x < list.length; x++) {
-
         var wo = Workorder(
-          result['jobOrderWorks'][x]['joWorkId'],
-          result['jobOrderWorks'][x]['scopeOfWork'],
-          result['jobOrderWorks'][x]['scopeGroup'],
-          result['jobOrderWorks'][x]['isPartsReq'],
+          map['jsonData']['jobOrderWorks'][x]['joWorkId'],
+          map['jsonData']['jobOrderWorks'][x]['scopeOfWork'],
+          map['jsonData']['jobOrderWorks'][x]['scopeGroup'],
+          map['jsonData']['jobOrderWorks'][x]['isPartsReq'],
         );
 
-        switch (result['jobOrderWorks'][x]['jobType']) {
+        switch (map['jsonData']['jobOrderWorks'][x]['jobType']) {
           case 'er':
             workordersEr.add(wo);
             break;
@@ -196,61 +195,16 @@ class JobordersState extends State<JobordersPage> {
         }
       }
 
-      Navigator.push(context, SlideRightRoute(
-          page: JobtypePage(workordersEr, workordersMf, workordersCalib,
-            workordersGm, this.widget.joborders[index].joId,)));
-
+      Navigator.push(context, SlideRightRoute(page: JobtypePage(workordersEr,
+        workordersMf, workordersCalib, workordersGm, this.widget.joborders[index].joId,)));
     } else {
-      showSnackbar(map['reason'], 'label', false);
+      Utils.showSnackbar(map['reason'], 'label', _scaffoldKey);
     }
-  }
-
-  void searchJo(String searchText) {
-    if (searchText.length > 2) {
-
-      search({'q': searchText, 'type': 'joid',}).then((map) {
-        if (map['success']) {
-
-          List<dynamic> list = map['jobOrders'];
-          var result = map['jobOrders'];
-
-          setState(() {
-            this.widget.joborders = List();
-            this.widget.len = list.length;
-
-            for (int x = 0; x < this.widget.len; x++) {
-              this.widget.joborders.add(Joborder(
-                  result[x]['customer'],
-                  result[x]['joNum'],
-                  result[x]['joId']
-              ));
-            }
-
-          });
-        }
-      });
-    }
-  }
-
-  void showSnackbar(String msg, String label, bool popable) {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-          label: label,
-          onPressed: () {
-            if (popable) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-    );
   }
 
   Future<String> getPhotos(var params) async {
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
@@ -268,7 +222,7 @@ class JobordersState extends State<JobordersPage> {
       var result = json.decode(response.body);
 
       if (response == null) {
-        showSnackbar('Unable to create response object. Cause: null.', 'OK', false);
+        Utils.showSnackbar('Unable to create response object. Cause: null.', 'OK', _scaffoldKey);
         setState(() { _loading = false; });
       } else if (response.statusCode == 200) {
         setState(() { _loading = false; });
@@ -288,131 +242,122 @@ class JobordersState extends State<JobordersPage> {
             photos, int.parse(params['jid']), params['joNum'])));
 
       } else {
-        showSnackbar('Status code is not ok.', 'OK', false);
+        Utils.showSnackbar('Status code is not ok.', 'OK', _scaffoldKey);
         setState(() { _loading = false; });
       }
       return "about to fix the return in menu.dart";
     } catch (e) {
       setState(() { _loading = false; });
       if (e.runtimeType.toString() == 'SocketException') {
-        showSnackbar('Unable to create connection to the server.', 'OK', false);
+        Utils.showSnackbar('Unable to create connection to the server.', 'OK', _scaffoldKey);
       } else {
-        showSnackbar(e.toString(), 'OK', false);
+        Utils.showSnackbar(e.toString(), 'OK', _scaffoldKey);
       }
       return "about to fix the return in login_screen.dart";
     }
   }
 
-  Future<Map> getWorkorders(var params) async {
+  Future<String> getWorkorders(var params) async {
+
+    setState(() { _loading = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
 
-    var returnMap = new Map();
-    returnMap['success'] = false;
+    if (domain == null || path == null) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    if (domain.isEmpty || path.isEmpty) {
+      setState(() { _loading = false; });
+      return '{"success": false, "reason": "Server address error."}';
+    }
 
     try {
-      setState(() { _loading = true; });
 
       final uri = Uri.http(domain, path+'GetJobOrderWorkList', params);
-
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
       });
 
       if (response == null) {
-        setState(() { _loading = false; });
-        returnMap['reason'] = 'No response received. Cause: null.';
-
+        return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
-        setState(() { _loading = false; });
-
-        returnMap['success'] = true;
-        returnMap['jsonData'] = response.body;
-
+        return '{"success": true, "jsonData": ${response.body}}';
       } else {
-        setState(() { _loading = false; });
-        returnMap['reason'] = 'Status code is not ok.';
+        return '{"success": false, "reason": "Failed to get workorders."}';
       }
 
-      return returnMap;
-
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
     } catch (e) {
+      return '{"success": false, "reason": "Cannot login at this time."}';
+    } finally {
       setState(() { _loading = false; });
-
-      if (e.runtimeType.toString() == 'SocketException') {
-        returnMap['reason'] = 'Unable to create connection to the server.';
-      } else {
-        returnMap['reason'] = e.toString();
-      }
-
-      return returnMap;
     }
   }
 
-  Future<Map> search(var params) async {
+  void searchJo(String searchText) {
+    if (searchText.length > 2) {
+
+      search({'q': searchText, 'type': 'joid',}).then((result) {
+        var map = json.decode(result.replaceAll("\n", "").trim());
+
+        if (map['success']) {
+          List<dynamic> list = map['data']['jobOrders'];
+
+          setState(() {
+            this.widget.joborders = List();
+            this.widget.len = list.length;
+            var map2 = map['data']['jobOrders'];
+
+            for (int x = 0; x < this.widget.len; x++) {
+              this.widget.joborders.add(Joborder(
+                map2[x]['customer'],
+                map2[x]['joNum'],
+                map2[x]['joId'],
+              ));
+            }
+          });
+        }
+      });
+    }
+  }
+
+  Future<String> search(var params) async {
+
+    setState(() { _loading = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
 
-    var returnMap = new Map();
-    returnMap['success'] = false;
-
     try {
-      setState(() { _loading = true; });
 
       final uri = new Uri.http(domain, path+'GetJobOrderList', params,);
-
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
       });
 
       if (response == null) {
-        setState(() { _loading = false; });
-
-        returnMap['reason'] = 'No response received. Cause: null.';
-
+        return '{"success": false, "reason": "The server took long to respond."}';
       } else if (response.statusCode == 200) {
-        setState(() { _loading = false; });
-
-        var result = json.decode(response.body);
-
-        if (result['totalCount'] != null) {
-
-          if (result['totalCount'] < 1) {
-            returnMap['reason'] = 'No joborder found.';
-
-          } else if (result['totalCount'] > 0) {
-
-            returnMap['success'] = true;
-            returnMap['jobOrders'] = result['jobOrders'];
-          }
-        } else if (result['success'] != null) {
-          returnMap['reason'] = result['reason'];
-        } else {
-          returnMap['reason'] = response.body;
-        }
+        return '{"success": true, "data": ${response.body}}';
       } else {
-        setState(() { _loading = false; });
-        returnMap['reason'] = 'Status code is not ok.';
+        return '{"success": false, "reason": "Searching failed."}';
       }
-
-      return returnMap;
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
     } catch (e) {
+      return '{"success": false, "reason": "Cannot search at this time."}';
+    } finally {
       setState(() { _loading = false; });
-
-      if (e.runtimeType.toString() == 'SocketException') {
-        returnMap['reason'] = 'Unable to create connection to the server.';
-      } else {
-        returnMap['reason'] = e.toString();
-      }
-
-      return returnMap;
     }
   }
 }
