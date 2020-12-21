@@ -175,11 +175,12 @@ class LoginPageState extends State<LoginPage> {
                           int end = cookie.indexOf(';');
 
                           if (_remember) {
-                            saveCredentials(controllerUsername.text, controllerPassword.text,
-                              cookie.substring(start, end),);
+                            saveCredentials(controllerUsername.text, controllerPassword.text,);
                           }
 
+                          saveSession(cookie.substring(start, end));
                           Navigator.of(context).pushReplacementNamed('/mainpage');
+
                         } else {
                           Utils.showSnackbar(map['reason'], 'OK', _scaffoldKey);
                         }
@@ -289,7 +290,7 @@ class LoginPageState extends State<LoginPage> {
 
       final uri = new Uri.http(domain, path+'Authenticate', params,);
       var response = await http.post(uri, headers: {'Accept':'application/json'})
-          .timeout(const Duration(seconds: 5),);
+          .timeout(const Duration(seconds: 10),);
 
       String cookie = response.headers['set-cookie'];
 
@@ -316,10 +317,15 @@ class LoginPageState extends State<LoginPage> {
     await prefs.setString('password', '');
   }
 
-  saveCredentials(String username, String password, String sessionId) async {
+  saveCredentials(String username, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("username", username);
     await prefs.setString("password", password);
+  }
+
+  saveSession(String sessionId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("sessionId", sessionId);
+    //print(sessionId);
   }
 }

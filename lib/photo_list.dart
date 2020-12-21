@@ -1,17 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'photo_widget.dart';
-import 'slide_right_route.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'photo.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:async/async.dart';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:async/async.dart';
+import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'dart:convert';
+import 'photo_widget.dart';
+import 'slide_right_route.dart';
+import 'photo.dart';
+import 'utils.dart';
 
 class PhotoListPage extends StatefulWidget {
 
@@ -20,12 +22,7 @@ class PhotoListPage extends StatefulWidget {
   int len;
   String joNum;
 
-  PhotoListPage(List<Photo> photos, int joId, String joNum) {
-    this.photos = photos;
-    this.joId = joId;
-    this.len = photos.length;
-    this.joNum = joNum;
-  }
+  PhotoListPage({this.photos, this.joId, this.len, this.joNum});
 
   @override
   PhotoListState createState() => new PhotoListState(this.photos, this.len);
@@ -40,13 +37,6 @@ class PhotoListState extends State<PhotoListPage> {
   bool toLocal = true;
   bool _loading =false;
   final _scaffoldKey =GlobalKey<ScaffoldState>();
-  String _selectedId;
-
-  void _onValueChange(String value) {
-    setState(() {
-      _selectedId = value;
-    });
-  }
 
   @override
   void initState() {
@@ -62,31 +52,25 @@ class PhotoListState extends State<PhotoListPage> {
 
     file = await ImagePicker.pickImage(
       source: ImageSource.camera,
-      //maxHeight: 800 - (800 * 0.25),
-      //maxWidth: 600 - (600 * 0.25),
       maxHeight: 600,
       maxWidth: 600,
     );
 
-    //file = await ImagePicker.pickImage(source: ImageSource.camera);
-
     if (file != null) {
       showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return ChoiceDialog(
-              uploadMultipart: uploadMultipart,
-              fileImage: file,
-            );
-          }
+        context: context,
+        builder: (BuildContext context) {
+          return ChoiceDialog(
+            uploadMultipart: uploadMultipart,
+            fileImage: file,
+          );
+        }
       );
     }
   }
 
   void uploadMultipart(File imageFile, int isMain) async {
-    setState(() {
-      _loading = true;
-    });
+    setState(() { _loading = true; });
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String domain = prefs.getString('domain');
@@ -96,7 +80,6 @@ class PhotoListState extends State<PhotoListPage> {
     var stream = new http.ByteStream(DelegatingStream.typed(imageFile.openRead()));
     var length = await imageFile.length();
     var uri = Uri.parse('http://'+domain+path+'UploadJoImage');
-    //var uri = Uri.parse('http://192.168.1.30:8080/mcsa/imagepicker');
 
     var request = new http.MultipartRequest("POST", uri);
     request.fields['jid'] = this.widget.joId.toString();
@@ -112,11 +95,12 @@ class PhotoListState extends State<PhotoListPage> {
       filename: this.widget.joNum+'('+now.toString().substring(0, now.toString().indexOf("."))+').jpg',
       contentType: MediaType.parse('image/jpeg'),
     );
-    request.files.add(multipartFile);
 
-    var response = await request.send();
+    request.files.add(multipartFile);
+    var response = await request.send().timeout(const Duration(seconds: 10,));
+
     response.stream.transform(utf8.decoder).listen((value) {
-      closeModalHUD();
+      setState(() { _loading = false; });
 
       if (response.statusCode == 200) {
         reloadPhotos({'jid':this.widget.joId.toString(),});
@@ -138,75 +122,17 @@ class PhotoListState extends State<PhotoListPage> {
         ];
 
         if (results[0] || results[1] || results[2] || results[3]) {
-          showSnackbar('Joborder picture uploaded.', 'OK', 2);
+          Utils.showSnackbar('Joborder picture uploaded.', 'OK', _scaffoldKey);
+          file.delete();
+
         } else {
-          showSnackbar(value, 'OK', 20);
+          Utils.showSnackbar(value, 'OK', _scaffoldKey);
         }
 
       } else {
-        showSnackbar('Failed to upload parts. Request is not OK.', 'OK', 30);
+        Utils.showSnackbar('Failed to upload parts. Request is not OK.', 'OK', _scaffoldKey);
       }
     });
-  }
-
-  Widget buildWidget() {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        title: Text('Photos'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
-            },
-          ),
-        ],
-      ),
-      body: ListView.separated(
-        itemCount: len,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            leading: Icon(Icons.photo),
-            title: Text(photos[index].filename),
-            trailing: Icon(Icons.arrow_forward_ios),
-            onTap: () {
-              getPhoto(this.widget.joId.toString(), photos[index].imageId);
-            },
-          );
-        },
-        padding: EdgeInsets.only(top: 10.0),
-        separatorBuilder: (context, index) => Divider(color: Colors.black26,),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.file_upload),
-        label: Text('Upload'),
-        onPressed: _choose,
-      ),
-    );
-  }
-
-  void closeModalHUD() {
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  void showSnackbar(String msg, String label, int seconds) {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        duration: Duration(seconds: seconds),
-        content: Text(msg),
-        action: SnackBarAction(
-          label: label,
-          onPressed: () {
-            if (!true) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-    );
   }
 
   @override
@@ -215,7 +141,40 @@ class PhotoListState extends State<PhotoListPage> {
       DeviceOrientation.portraitUp,
     ]);
     return ModalProgressHUD(
-      child: buildWidget(),
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text('Photos'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+            ),
+          ],
+        ),
+        body: ListView.separated(
+          itemCount: len,
+          itemBuilder: (BuildContext context, int index) {
+            return ListTile(
+              leading: Icon(Icons.photo),
+              title: Text(photos[index].filename),
+              trailing: Icon(Icons.arrow_forward_ios),
+              onTap: () {
+                getPhoto(this.widget.joId.toString(), photos[index].imageId);
+              },
+            );
+          },
+          padding: EdgeInsets.only(top: 10.0),
+          separatorBuilder: (context, index) => Divider(color: Colors.black26,),
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          icon: Icon(Icons.file_upload),
+          label: Text('Upload'),
+          onPressed: _choose,
+        ),
+      ),
       inAsyncCall: _loading,
     );
   }
@@ -226,11 +185,13 @@ class PhotoListState extends State<PhotoListPage> {
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
     String link = 'http://'+domain+path+'GetJoImage?jid='+jid+'&iid='+iid;
-    Navigator.push(context, SlideRightRoute(page: PhotoWidget(link, sessionId)));
+    Navigator.push(context, SlideRightRoute(page: PhotoWidget(link: link, sessionId: sessionId)));
     return '';
   }
 
   Future<void> reloadPhotos(var params) async {
+
+    setState(() { _loading = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String domain = prefs.getString('domain');
@@ -238,33 +199,28 @@ class PhotoListState extends State<PhotoListPage> {
     String sessionId = prefs.getString('sessionId');
 
     try {
-      setState(() {
-        _loading =true;
-      });
 
       final uri = Uri.http(domain, path+'GetJoImageList', params);
-
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
-      });
+      }).timeout(const Duration(seconds: 10));
 
-      var result = json.decode(response.body);
+      setState(() { _loading = false; });
 
       if (response == null) {
-        showSnackbar('Unable to create response object. Cause: null.', 'OK', 30);
-        closeModalHUD();
+        Utils.showSnackbar('Unable to create response object. Cause: null.', 'OK', _scaffoldKey);
       } else if (response.statusCode == 200) {
-        closeModalHUD();
+        var result = json.decode(response.body);
 
         List<dynamic> list = result['images'];
         List<Photo> locPhotos = new List();
 
         for (int x = 0; x < list.length; x++) {
           locPhotos.add(Photo(
-            result['images'][x]['imageId'],
-            (result['images'][x]['filename'].toString().isEmpty ? 'No filename' : result['images'][x]['filename']),
-            result['images'][x]['isMfImage'],
+            imageId: result['images'][x]['imageId'],
+            filename: (result['images'][x]['filename'].toString().isEmpty ? 'No filename' : result['images'][x]['filename']),
+            isMfImage: result['images'][x]['isMfImage'],
           ));
         }
 
@@ -275,18 +231,17 @@ class PhotoListState extends State<PhotoListPage> {
         });
 
       } else {
-        showSnackbar('Status code is not ok.', 'OK', 30);
-        closeModalHUD();
+        Utils.showSnackbar('Status code is not ok.', 'OK', _scaffoldKey);
       }
 
+    } on SocketException {
+      Utils.showSnackbar('Failed to connect to the server.', 'OK', _scaffoldKey);
+    } on TimeoutException {
+      Utils.showSnackbar('The server took long to respond.', 'OK', _scaffoldKey);
     } catch (e) {
-      closeModalHUD();
-
-      if (e.runtimeType.toString() == 'SocketException') {
-        showSnackbar('Unable to create connection to the server.', 'OK', 30);
-      } else {
-        showSnackbar(e.toString(), 'OK', 30);
-      }
+      Utils.showSnackbar(e.toString(), 'OK', _scaffoldKey);
+    } finally {
+      setState(() { _loading = false; });
     }
   }
 }
@@ -316,8 +271,8 @@ class ChoiceDialogState extends State<ChoiceDialog> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
-
     return SimpleDialog(
       title: const Text('What to upload'),
       children: <Widget>[

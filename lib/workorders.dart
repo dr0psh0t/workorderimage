@@ -89,16 +89,19 @@ class WorkordersPageState extends State<WorkordersPage> {
 
                     for (int x = 0; x < list.length; x++) {
                       parts.add(Part(
-                        map2[x]['partId'],
-                        map2[x]['qty'],
-                        map2[x]['isImage'],
-                        map2[x]['description'],
+                        partId: map2[x]['partId'],
+                        quantity: map2[x]['qty'],
+                        isImage: map2[x]['isImage'],
+                        description: map2[x]['description'],
                       ));
                     }
 
                     Navigator.push(context, SlideRightRoute(page: PartsListPage(
-                        parts, joId, woId, unescape.convert(
-                        this.widget.workorders[index].scopeGroup).toString())));
+                      parts: parts,
+                      joId: joId,
+                      woId: woId,
+                      title: unescape.convert(this.widget.workorders[index].scopeGroup).toString(),
+                    )));
 
                   } else {
                     Utils.showSnackbar('No Parts', 'Empty', _scaffoldKey);
@@ -141,7 +144,7 @@ class WorkordersPageState extends State<WorkordersPage> {
       var response = await http.post(uri, headers: {
         'Accept': 'application/json',
         'Cookie': 'JSESSIONID=' + sessionId,
-      }).timeout(const Duration(seconds: 5),);
+      }).timeout(const Duration(seconds: 10),);
 
       if (response == null) {
         return '{"success": false, "reason": "The server took long to respond."}';

@@ -7,25 +7,21 @@ import 'mainpage.dart';
 
 class PartsListPage extends StatefulWidget {
   List<Part> parts;
-  int len;
   int joId;
   int woId;
   String title;
 
-  PartsListPage(List<Part> parts, int joId, int woId, String title) {
-    this.parts = parts;
-    this.len = parts.length;
-    this.joId = joId;
-    this.woId = woId;
-    this.title = title;
-  }
+  PartsListPage({this.parts, this.joId, this.woId, this.title});
 
   @override
-  PartsListState createState() => new PartsListState();
+  PartsListState createState() => new PartsListState(len: parts.length);
 }
 
 class PartsListState extends State<PartsListPage> {
   var unescape;
+  int len;
+
+  PartsListState({this.len});
 
   @override
   void initState() {
@@ -49,7 +45,7 @@ class PartsListState extends State<PartsListPage> {
         ],
       ),
       body: ListView.separated(
-        itemCount: this.widget.len,
+        itemCount: len,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             leading: Icon(Icons.build),
@@ -58,12 +54,12 @@ class PartsListState extends State<PartsListPage> {
             trailing: Icon(this.widget.parts[index].isImage == 1 ? Icons.check_circle : Icons.block),
             onTap: () {
               Navigator.push(context, SlideRightRoute(page: PartsPage(
-                this.widget.parts[index].isImage==0,
-                this.widget.parts[index].description,
-                this.widget.parts[index].quantity,
-                this.widget.joId,
-                this.widget.woId,
-                this.widget.parts[index].partId,
+                notviewable: widget.parts[index].isImage==0,
+                description: widget.parts[index].description,
+                quantity: widget.parts[index].quantity,
+                joId: widget.joId,
+                woId: widget.woId,
+                partId: widget.parts[index].partId,
               )));
             },
           );

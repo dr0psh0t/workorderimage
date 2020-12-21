@@ -103,43 +103,43 @@ class SettingsState extends State<SettingsScreen> {
 
   pathDialog(BuildContext context) async {
     return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Set path'),
-            content: TextField(
-              controller: pathController,
-              keyboardType: TextInputType.text,
-              inputFormatters: [
-                WhitelistingTextInputFormatter(RegExp("[^\\s+]")),
-              ],
-              decoration: InputDecoration(hintText: "Enter path here"),
-            ),
-            actions: <Widget>[
-              new FlatButton(
-                child: new Text('OK'),
-                onPressed: () {
-                  if (domainController.text.isEmpty) {
-                    final snackBar = SnackBar(
-                      content: Text('Path is required.'),
-                      action: SnackBarAction(
-                        label: 'OK',
-                        onPressed: () {
-                          // Some code to undo the change!
-                        },
-                      ),
-                    );
-                    // Find the Scaffold in the Widget tree and use it to show a SnackBar!
-                    Scaffold.of(context).showSnackBar(snackBar);
-                  } else {
-                    savePath(pathController.text);
-                    Navigator.of(context).pop();
-                  }
-                },
-              )
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Set path'),
+          content: TextField(
+            controller: pathController,
+            keyboardType: TextInputType.text,
+            inputFormatters: [
+              WhitelistingTextInputFormatter(RegExp("[^\\s+]")),
             ],
-          );
-        }
+            decoration: InputDecoration(hintText: "Enter path here"),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('OK'),
+              onPressed: () {
+                if (domainController.text.isEmpty) {
+                  final snackBar = SnackBar(
+                    content: Text('Path is required.'),
+                    action: SnackBarAction(
+                      label: 'OK',
+                      onPressed: () {
+                        // Some code to undo the change!
+                      },
+                    ),
+                  );
+                  // Find the Scaffold in the Widget tree and use it to show a SnackBar!
+                  Scaffold.of(context).showSnackBar(snackBar);
+                } else {
+                  savePath(pathController.text);
+                  Navigator.of(context).pop();
+                }
+              },
+            )
+          ],
+        );
+      }
     );
   }
 

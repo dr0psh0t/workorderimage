@@ -14,124 +14,98 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
+
   bool _loading = false;
   final _scaffoldKey =GlobalKey<ScaffoldState>();
+  TextEditingController _settingsController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
   }
 
-  Widget buildWidget() {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Select'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.http),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => McdPage()));
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: () {
-              displayDialog(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.archive),
-            onPressed: () {
-              Navigator.of(context, rootNavigator: true).pushReplacement(
-                  MaterialPageRoute(builder: (context) => new LoginScreen()));
-            },
-          ),
-        ],
-      ),
-      key: _scaffoldKey,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                      Icon(Icons.work, color: Colors.white,),
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                      Text('Joborder Parts', style: TextStyle(color: Colors.white),),
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                    ],
-                  ),
-                  color: Colors.blue,
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
-                  onPressed: () {
-                    List<Joborder> joborders = List();
-                    Navigator.push(context, SlideRightRoute(page: JobordersPage(joborders)));
-                  },
-                ),
-                Padding(padding: EdgeInsets.only(left: 10.0, right: 10.0),),
-                RaisedButton(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                      Icon(Icons.scanner, color: Colors.white,),
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                      Text('  QR Scanner  ', style: TextStyle(color: Colors.white),),
-                      Padding(padding: EdgeInsets.only(bottom: 10.0),),
-                    ],
-                  ),
-                  color: Colors.blue,
-                  shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
-                  onPressed: () {
-                    //Navigator.pushReplacement(context, SlideRightRoute(page: QrPage()));
-                    Navigator.push(context, SlideRightRoute(page: QrPage()));
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
-      child: buildWidget(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Select'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.http),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => McdPage()));
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                displayDialog(context);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.archive),
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pushReplacement(
+                    MaterialPageRoute(builder: (context) => new LoginScreen()));
+              },
+            ),
+          ],
+        ),
+        key: _scaffoldKey,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(padding: EdgeInsets.only(bottom: 10.0),),
+                        Icon(Icons.work, color: Colors.white,),
+                        Padding(padding: EdgeInsets.only(bottom: 10.0),),
+                        Text('Joborder Parts', style: TextStyle(color: Colors.white),),
+                        Padding(padding: EdgeInsets.only(bottom: 10.0),),
+                      ],
+                    ),
+                    color: Colors.blue,
+                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
+                    onPressed: () {
+                      List<Joborder> joborders = List();
+                      Navigator.push(context, SlideRightRoute(page: JobordersPage(joborders)));
+                    },
+                  ),
+                  Padding(padding: EdgeInsets.only(left: 10.0, right: 10.0),),
+                  RaisedButton(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Padding(padding: EdgeInsets.only(bottom: 10.0),),
+                        Icon(Icons.scanner, color: Colors.white,),
+                        Padding(padding: EdgeInsets.only(bottom: 10.0),),
+                        Text('  QR Scanner  ', style: TextStyle(color: Colors.white),),
+                        Padding(padding: EdgeInsets.only(bottom: 10.0),),
+                      ],
+                    ),
+                    color: Colors.blue,
+                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(20.0)),
+                    onPressed: () {
+                      //Navigator.pushReplacement(context, SlideRightRoute(page: QrPage()));
+                      Navigator.push(context, SlideRightRoute(page: QrPage()));
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
       inAsyncCall: _loading,
     );
   }
-
-  void closeModalHUD() {
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  void showSnackbar(String msg, String label, bool popable) {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        action: SnackBarAction(
-          label: label,
-          onPressed: () {
-            if (popable) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  TextEditingController _settingsController = TextEditingController();
   
   displayDialog(BuildContext context) async {
     return showDialog(

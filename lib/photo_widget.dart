@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
 class PhotoWidget extends StatelessWidget {
+
   String link;
   String sessionId;
 
-  PhotoWidget(String link, String sessionId) {
-    this.link = link;
-    this.sessionId = sessionId;
-  }
+  PhotoWidget({this.link, this.sessionId});
 
   @override
   Widget build(BuildContext context) {

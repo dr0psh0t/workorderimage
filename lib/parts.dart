@@ -20,14 +20,7 @@ class PartsPage extends StatefulWidget {
   int woId;
   int partId;
 
-  PartsPage(bool notviewable, String description, int quantity, int joId, int woId, int partId) {
-    this.notviewable = notviewable;
-    this.description = description;
-    this.quantity = quantity;
-    this.joId = joId;
-    this.woId = woId;
-    this.partId = partId;
-  }
+  PartsPage({this.notviewable, this.description, this.quantity, this.joId, this.woId, this.partId});
 
   @override
   PartsState createState() => new PartsState();
@@ -46,12 +39,8 @@ class PartsState extends State<PartsPage> {
   }
 
   void _choose() async {
-    //file = await ImagePicker.pickImage(source: ImageSource.camera,);
-
     file = await ImagePicker.pickImage(
       source: ImageSource.camera,
-      //maxHeight: 800 - (800 * 0.25),
-      //maxWidth: 600 - (600 * 0.25),
       maxHeight: 600,
       maxWidth: 600,
     );
@@ -85,11 +74,10 @@ class PartsState extends State<PartsPage> {
   }
 
   void uploadMultipart(File imageFile) async {
-    setState(() {
-      _loading = true;
-    });
 
+    setState(() { _loading = true; });
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
@@ -115,7 +103,7 @@ class PartsState extends State<PartsPage> {
 
     var response = await request.send();
     response.stream.transform(utf8.decoder).listen((value) {
-      closeModalHUD();
+      setState(() { _loading = false; });
 
       if (response.statusCode == 200) {
         /*
@@ -137,66 +125,39 @@ class PartsState extends State<PartsPage> {
         ];
 
         if (results[0] || results[1] || results[2] || results[3]) {
-          showSnackbar('Parts picture uploaded.', 'OK', 2);
+          Utils.showSnackbar('Parts picture uploaded.', 'OK', _scaffoldKey);
         } else {
-          showSnackbar(value, 'OK', 20);
+          Utils.showSnackbar(value, 'OK', _scaffoldKey);
         }
 
       } else {
-        showSnackbar('Failed to upload parts. Request is not OK.', 'OK', 30);
+        Utils.showSnackbar('Failed to upload parts. Request is not OK.', 'OK', _scaffoldKey);
       }
     });
-  }
-
-  void showSnackbar(String msg, String label, int seconds) {
-    _scaffoldKey.currentState.showSnackBar(
-      SnackBar(
-        duration: Duration(seconds: seconds),
-        content: Text(msg),
-        action: SnackBarAction(
-          label: label,
-          onPressed: () {
-            if (!true) {
-              Navigator.of(context).pop();
-            }
-          },
-        ),
-      ),
-    );
-  }
-
-  void closeModalHUD() {
-    setState(() {
-      _loading = false;
-    });
-  }
-
-  Widget buildWidget() {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(title: Text('Photos'),),
-      body: ListView(
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.description),
-            title: Text('Parts Description'),
-            subtitle: Text(unescape.convert(this.widget.description).toString()),
-          ),
-          ListTile(
-            leading: Icon(Icons.assignment),
-            title: Text('Quantity'),
-            subtitle: Text(this.widget.quantity.toString()),
-          ),
-        ],
-      ),
-      floatingActionButton: this.widget.notviewable ? getSpeedDial() : getFloatingActionBar(),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
-      child: buildWidget(),
+      child: Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(title: Text('Photos'),),
+        body: ListView(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.description),
+              title: Text('Parts Description'),
+              subtitle: Text(unescape.convert(this.widget.description).toString()),
+            ),
+            ListTile(
+              leading: Icon(Icons.assignment),
+              title: Text('Quantity'),
+              subtitle: Text(this.widget.quantity.toString()),
+            ),
+          ],
+        ),
+        floatingActionButton: this.widget.notviewable ? getSpeedDial() : getFloatingActionBar(),
+      ),
       inAsyncCall: _loading,
     );
   }
@@ -217,7 +178,7 @@ class PartsState extends State<PartsPage> {
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
     String link = 'http://'+domain+path+'ViewWorkOrderPartsImage?jid='+jid+'&wid='+wid+'&pid='+pid;
-    Navigator.push(context, SlideRightRoute(page: PhotoWidget(link, sessionId)));
+    Navigator.push(context, SlideRightRoute(page: PhotoWidget(link: link, sessionId: sessionId)));
     return '';
   }
 

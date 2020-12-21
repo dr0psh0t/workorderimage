@@ -105,14 +105,21 @@ class JobordersState extends State<JobordersPage> {
 
                                 for (int x = 0; x < list.length; x++) {
                                   photos.add(Photo(
-                                    map2[x]['imageId'],
-                                    (map2[x]['filename'].toString().isEmpty ? 'No filename' :map2[x]['filename']),
-                                    map2[x]['isMfImage'],
+                                    imageId: map2[x]['imageId'],
+                                    filename: (map2[x]['filename'].toString().isEmpty ? 'No filename' :map2[x]['filename']),
+                                    isMfImage: map2[x]['isMfImage'],
                                   ));
                                 }
 
-                                Navigator.push(context, SlideRightRoute(page: PhotoListPage(
-                                    photos, int.parse(jid), jonum)));
+                                Navigator.push(context,
+                                  SlideRightRoute(
+                                    page: PhotoListPage(
+                                    photos: photos,
+                                    joId: int.parse(jid),
+                                    joNum: jonum,)
+                                  )
+                                );
+
                               });
                             },
                           ),
@@ -161,14 +168,20 @@ class JobordersState extends State<JobordersPage> {
 
                                         for (int x = 0; x < list.length; x++) {
                                           photos.add(Photo(
-                                            map2[x]['imageId'],
-                                            (map2[x]['filename'].toString().isEmpty ? 'No filename' :map2[x]['filename']),
-                                            map2[x]['isMfImage'],
+                                            imageId: map2[x]['imageId'],
+                                            filename: (map2[x]['filename'].toString().isEmpty ? 'No filename' :map2[x]['filename']),
+                                            isMfImage: map2[x]['isMfImage'],
                                           ));
                                         }
 
-                                        Navigator.push(context, SlideRightRoute(page: PhotoListPage(
-                                            photos, int.parse(jid), jonum)));
+                                        Navigator.push(context,
+                                          SlideRightRoute(
+                                          page: PhotoListPage(
+                                            photos: photos,
+                                            joId: int.parse(jid),
+                                            joNum: jonum,)
+                                          )
+                                        );
                                       });
                                     },
                                   ),
@@ -272,7 +285,7 @@ class JobordersState extends State<JobordersPage> {
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
-      }).timeout(const Duration(seconds: 5),);
+      }).timeout(const Duration(seconds: 10),);
 
       if (response == null) {
         return '{"success": false, "reason": "The server took long to respond."}';
@@ -354,9 +367,9 @@ class JobordersState extends State<JobordersPage> {
 
             for (int x = 0; x < this.widget.len; x++) {
               this.widget.joborders.add(Joborder(
-                map2[x]['customer'],
-                map2[x]['joNum'],
-                map2[x]['joId'],
+                customer: map2[x]['customer'],
+                joNum: map2[x]['joNum'],
+                joId: map2[x]['joId'],
               ));
             }
           });
@@ -373,6 +386,7 @@ class JobordersState extends State<JobordersPage> {
     String domain = prefs.getString('domain');
     String path = prefs.getString('path');
     String sessionId = prefs.getString('sessionId');
+    //print(sessionId);
 
     if (domain == null || path == null || sessionId == null) {
       setState(() { _loading = false; });
@@ -390,7 +404,7 @@ class JobordersState extends State<JobordersPage> {
       var response = await http.post(uri, headers: {
         'Accept':'application/json',
         'Cookie':'JSESSIONID='+sessionId,
-      }).timeout(const Duration(seconds: 5),);
+      }).timeout(const Duration(seconds: 10),);
 
       if (response == null) {
         return '{"success": false, "reason": "The server took long to respond."}';
