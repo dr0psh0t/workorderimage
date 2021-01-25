@@ -114,9 +114,10 @@ class JobordersState extends State<JobordersPage> {
                                 Navigator.push(context,
                                   SlideRightRoute(
                                     page: PhotoListPage(
-                                    photos: photos,
-                                    joId: int.parse(jid),
-                                    joNum: jonum,)
+                                      photos: photos,
+                                      joId: int.parse(jid),
+                                      joNum: jonum,
+                                    )
                                   )
                                 );
 
@@ -150,7 +151,7 @@ class JobordersState extends State<JobordersPage> {
                                       contentPadding: EdgeInsets.all(1.0),
                                     ),
                                     onPressed: () {
-                                      Navigator.of(context).pop();
+                                      //Navigator.of(context).pop();
 
                                       var jid = this.widget.joborders[index].joId.toString();
                                       var jonum = this.widget.joborders[index].joNum;

@@ -22,17 +22,15 @@ class PhotoListPage extends StatefulWidget {
   int len;
   String joNum;
 
-  PhotoListPage({this.photos, this.joId, this.len, this.joNum});
+  PhotoListPage({this.photos, this.joId, this.joNum});
 
   @override
-  PhotoListState createState() => new PhotoListState(this.photos, this.len);
+  PhotoListState createState() => new PhotoListState();
 }
 
 class PhotoListState extends State<PhotoListPage> {
   File file;
   int contentSize;
-  List<Photo> photos;
-  int len;
 
   bool toLocal = true;
   bool _loading =false;
@@ -41,11 +39,7 @@ class PhotoListState extends State<PhotoListPage> {
   @override
   void initState() {
     super.initState();
-  }
-
-  PhotoListState(List<Photo> photos, int len) {
-    this.photos = photos;
-    this.len = len;
+    widget.len = widget.photos.length;
   }
   
   Future _choose() async {
@@ -155,14 +149,14 @@ class PhotoListState extends State<PhotoListPage> {
           ],
         ),
         body: ListView.separated(
-          itemCount: len,
+          itemCount: widget.len,
           itemBuilder: (BuildContext context, int index) {
             return ListTile(
               leading: Icon(Icons.photo),
-              title: Text(photos[index].filename),
+              title: Text(widget.photos[index].filename),
               trailing: Icon(Icons.arrow_forward_ios),
               onTap: () {
-                getPhoto(this.widget.joId.toString(), photos[index].imageId);
+                getPhoto(this.widget.joId.toString(), widget.photos[index].imageId);
               },
             );
           },
@@ -225,9 +219,9 @@ class PhotoListState extends State<PhotoListPage> {
         }
 
         setState(() {
-          photos.clear();
-          photos.addAll(locPhotos);
-          len = photos.length;
+          widget.photos.clear();
+          widget.photos.addAll(locPhotos);
+          widget.len = widget.photos.length;
         });
 
       } else {
