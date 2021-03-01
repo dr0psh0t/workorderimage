@@ -63,7 +63,7 @@ class PartsState extends State<PartsPage> {
                 child: Text('Yes'),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  uploadMultipart(file);
+                  capture();
                 },
               ),
             ],
@@ -71,6 +71,16 @@ class PartsState extends State<PartsPage> {
         }
       );
     }
+  }
+
+  void capture() {
+    Utils.askCameraPermission().then((granted){
+      if (granted) {
+        uploadMultipart(file);
+      } else {
+        Utils.toast('Allow application to access camera');
+      }
+    });
   }
 
   void uploadMultipart(File imageFile) async {

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:workorderimage/utils.dart';
 import 'slide_right_route.dart';
 import 'qrcamera.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,6 +10,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class QrPage extends StatefulWidget {
   @override
@@ -87,11 +89,23 @@ class QrState extends State<QrPage> {
                 hintText: 'QR',
                 prefixIcon: Icon(Icons.code),
                 suffixIcon: IconButton(icon: Icon(Icons.scanner),
-                  onPressed: barcodeScan,
-                  /*onPressed: () {
-                    Navigator.push(context, SlideRightRoute(
-                        page: QrCameraPage(callback: setQrCode,)));
-                  },*/
+                  onPressed: () {
+                    askCameraPermission().then((granted){
+                      if (granted) {
+                        scanQr().then((result) {
+                          var map = json.decode(result);
+
+                          if (map['success']) {
+                            qrControl.text = map['data'];
+                          } else {
+                            Utils.toast(map['reason']);
+                          }
+                        });
+                      } else {
+                        Utils.toast('Allow application to access camera');
+                      }
+                    });
+                  },
                 ),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(15.0))
@@ -106,72 +120,72 @@ class QrState extends State<QrPage> {
             child: TextField(
               onTap: () {
                 showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return SimpleDialog(
-                        children: <Widget>[
-                          SimpleDialogOption(
-                            //child: Text('ER'),
-                            child: ListTile(
-                              dense: true,
-                              title: Text('ER', style: TextStyle(
-                                fontFamily: 'Sansation-Regular',
-                                color: Colors.black54,
-                                fontSize: 20.0),
-                              ),
+                  context: context,
+                  builder: (BuildContext context) {
+                    return SimpleDialog(
+                      children: <Widget>[
+                        SimpleDialogOption(
+                          //child: Text('ER'),
+                          child: ListTile(
+                            dense: true,
+                            title: Text('ER', style: TextStyle(
+                              fontFamily: 'Sansation-Regular',
+                              color: Colors.black54,
+                              fontSize: 20.0),
                             ),
-                            onPressed: () {
-                              setState(() { typeControl.text = 'er'; });
-                              Navigator.of(context).pop();
-                            },
                           ),
-                          SimpleDialogOption(
-                            //child: Text('MF'),
-                            child: ListTile(
-                              dense: true,
-                              title: Text('MF', style: TextStyle(
-                                fontFamily: 'Sansation-Regular',
-                                color: Colors.black54,
-                                fontSize: 20.0),
-                              ),
+                          onPressed: () {
+                            setState(() { typeControl.text = 'er'; });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        SimpleDialogOption(
+                          //child: Text('MF'),
+                          child: ListTile(
+                            dense: true,
+                            title: Text('MF', style: TextStyle(
+                              fontFamily: 'Sansation-Regular',
+                              color: Colors.black54,
+                              fontSize: 20.0),
                             ),
-                            onPressed: () {
-                              setState(() { typeControl.text = 'mf'; });
-                              Navigator.of(context).pop();
-                            },
                           ),
-                          SimpleDialogOption(
-                            //child: Text('GM'),
-                            child: ListTile(
-                              dense: true,
-                              title: Text('GM', style: TextStyle(
-                                fontFamily: 'Sansation-Regular',
-                                color: Colors.black54,
-                                fontSize: 20.0),
-                              ),
+                          onPressed: () {
+                            setState(() { typeControl.text = 'mf'; });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        SimpleDialogOption(
+                          //child: Text('GM'),
+                          child: ListTile(
+                            dense: true,
+                            title: Text('GM', style: TextStyle(
+                              fontFamily: 'Sansation-Regular',
+                              color: Colors.black54,
+                              fontSize: 20.0),
                             ),
-                            onPressed: () {
-                              setState(() { typeControl.text = 'gm'; });
-                              Navigator.of(context).pop();
-                            },
                           ),
-                          SimpleDialogOption(
-                            child: ListTile(
-                              dense: true,
-                              title: Text('CALIB', style: TextStyle(
-                                fontFamily: 'Sansation-Regular',
-                                color: Colors.black54,
-                                fontSize: 20.0),
-                              ),
+                          onPressed: () {
+                            setState(() { typeControl.text = 'gm'; });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        SimpleDialogOption(
+                          child: ListTile(
+                            dense: true,
+                            title: Text('CALIB', style: TextStyle(
+                              fontFamily: 'Sansation-Regular',
+                              color: Colors.black54,
+                              fontSize: 20.0),
                             ),
-                            onPressed: () {
-                              setState(() { typeControl.text = 'calib'; });
-                              Navigator.of(context).pop();
-                            },
                           ),
-                        ],
-                      );
-                    }
+                          onPressed: () {
+                            setState(() { typeControl.text = 'calib'; });
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                      ],
+                    );
+                  }
                 );
               },
               onChanged: (value) {},
@@ -249,59 +263,6 @@ class QrState extends State<QrPage> {
     );
   }
 
-  /*
-  Future<Map> sendQr(var params) async {
-
-    setState(() { _sending = true; });
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    String domain = prefs.getString('domain');
-    String path = prefs.getString('path');
-    String sessionId = prefs.getString('sessionId');
-
-    var returnMap = Map();
-    returnMap['success'] = false;
-
-    try {
-
-      final uri = new Uri.http(domain, path+'InitScanWorkOrderQr', params,);
-
-      var response = await http.post(uri, headers: {
-        'Accept': 'application/json',
-        'Cookie':'JSESSIONID='+sessionId,
-      });
-
-      if (response == null) {
-        returnMap['reason'] = 'No response received. Cause: null.';
-      } else if (response.statusCode == 200) {
-        var result = json.decode(response.body);
-        String msg = result['reason'];
-
-        if (msg == null || msg == '') {
-          msg = 'Workorder QR has scanned.';
-        }
-
-        showSnackbar(msg, 'OK', false);
-
-        qrControl.clear();
-      } else {
-        showSnackbar('Status code is not ok.', 'OK', false);
-      }
-
-    } on SocketException {
-
-      setState(() {_sending = false; });
-      returnMap['reason'] = 'Unable to create connection to the server.';
-      return returnMap;
-
-    } catch (e) {
-
-      setState(() { _sending = false; });
-      returnMap['reason'] = e.toString();
-      return returnMap;
-    }
-  }*/
-
   void sendQr(var params) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String domain = prefs.getString('domain');
@@ -357,14 +318,38 @@ class QrState extends State<QrPage> {
     );
   }
 
-  void barcodeScan() async {
+  Future<String> scanQr() async {
     try {
       String barcode = await BarcodeScanner.scan();
-      setState(() {
-        qrControl.text = barcode.toString();
-      });
+      return '{"success": true, "reason": "OK", "data": "$barcode"}';
+
+    } on PlatformException {
+      return '{"success": false, "reason": "Allow application to access camera."}';
     } catch (e) {
-      showSnackbar(e.toString(), 'Scanning Error', false);
+      return '{"success": false, "reason": "An error occurred in scan."}';
+    }
+  }
+
+  Future<bool> askCameraPermission() async {
+    var status = await Permission.camera.status;
+
+    // The user opted to never again see the permission request dialog for this
+    // app. The only way to change the permission's status now is to let the
+    // user manually enable it in the system settings.
+    if (status.isPermanentlyDenied) {
+      openAppSettings();
+      return false;
+    }
+
+    if (status.isGranted) {
+      return status.isGranted;
+    } else {
+      if (await Permission.camera.request().isGranted) {
+        status = await Permission.camera.status;
+        return status.isGranted;
+      } else {
+        return false;
+      }
     }
   }
 }

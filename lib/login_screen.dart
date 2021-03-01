@@ -209,12 +209,12 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 Expanded(
-                    child: FlatButton(
-                      child: Text("Settings", style: TextStyle(color: Colors.black54,),),
-                      onPressed: () {
-                        displayDialog(context);
-                      },
-                    ),
+                  child: FlatButton(
+                    child: Text("Settings", style: TextStyle(color: Colors.black54,),),
+                    onPressed: () {
+                      displayDialog(context);
+                    },
+                  ),
                 ),
               ],
             ),

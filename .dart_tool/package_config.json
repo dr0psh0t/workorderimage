@@ -170,6 +170,18 @@
       "languageVersion": "2.1"
     },
     {
+      "name": "permission_handler",
+      "rootUri": "file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler-5.1.0+2",
+      "packageUri": "lib/",
+      "languageVersion": "2.7"
+    },
+    {
+      "name": "permission_handler_platform_interface",
+      "rootUri": "file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/permission_handler_platform_interface-2.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.6"
+    },
+    {
       "name": "petitparser",
       "rootUri": "file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/petitparser-2.4.0",
       "packageUri": "lib/",
@@ -180,6 +192,12 @@
       "rootUri": "file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/photo_view-0.9.1",
       "packageUri": "lib/",
       "languageVersion": "2.2"
+    },
+    {
+      "name": "plugin_platform_interface",
+      "rootUri": "file:///D:/src/flutter/.pub-cache/hosted/pub.dartlang.org/plugin_platform_interface-1.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.1"
     },
     {
       "name": "qr_mobile_vision",
@@ -290,7 +308,7 @@
       "languageVersion": "2.1"
     }
   ],
-  "generated": "2020-06-26T06:16:00.818350Z",
+  "generated": "2021-02-17T01:38:46.652952Z",
   "generator": "pub",
   "generatorVersion": "2.7.0"
 }

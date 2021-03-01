@@ -279,7 +279,7 @@ class ChoiceDialogState extends State<ChoiceDialog> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
-            widget.uploadMultipart(widget.fileImage, 1);
+            capture(1);
           },
         ),
         SimpleDialogOption(
@@ -291,10 +291,20 @@ class ChoiceDialogState extends State<ChoiceDialog> {
           ),
           onPressed: () {
             Navigator.of(context).pop();
-            widget.uploadMultipart(widget.fileImage, 0);
+            capture(0);
           },
         ),
       ],
     );
+  }
+
+  void capture(int flag) {
+    Utils.askCameraPermission().then((granted){
+      if (granted) {
+        widget.uploadMultipart(widget.fileImage, flag);
+      } else {
+        Utils.toast('Allow application to access camera');
+      }
+    });
   }
 }

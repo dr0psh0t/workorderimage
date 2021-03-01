@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Utils {
   static String correctSuccess(String jsonStr) {
@@ -28,9 +29,9 @@ class Utils {
     Fluttertoast.showToast(
       msg: msg,
       toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.CENTER,
+      gravity: ToastGravity.BOTTOM,
       timeInSecForIos: 1,
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.blue,
       textColor: Colors.white,
       fontSize: 16.0,
     );
@@ -66,5 +67,30 @@ class Utils {
           );
         }
     );
+  }
+
+  static Future<bool> askCameraPermission() async {
+    var status = await Permission.camera.status;
+
+    // The user opted to never again see the permission request dialog for this
+    // app. The only way to change the permission's status now is to let the
+    // user manually enable it in the system settings.
+    if (status.isPermanentlyDenied) {
+
+
+      openAppSettings();
+      return false;
+    }
+
+    if (status.isGranted) {
+      return status.isGranted;
+    } else {
+      if (await Permission.camera.request().isGranted) {
+        status = await Permission.camera.status;
+        return status.isGranted;
+      } else {
+        return false;
+      }
+    }
   }
 }

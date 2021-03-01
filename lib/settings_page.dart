@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'dart:async';
+import 'package:http/http.dart' as http;
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -8,6 +12,8 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class SettingsState extends State<SettingsScreen> {
+  bool _rotating = false;
+  final _scaffoldKey =GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -17,40 +23,74 @@ class SettingsState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('Settings'),),
-      body: Container(
-        child: ListView(
-          children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.domain),
-              title: Text('Domain'),
-              subtitle: Text(domainController.text),
-              dense: true,
-              onTap: () {
-                domainDialog(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.directions),
-              title: Text('Path'),
-              subtitle: Text(pathController.text),
-              dense: true,
-              onTap: () {
-                pathDialog(context);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.drafts),
-              title: Text('Set Defaults'),
-              subtitle: Text('Set Defaults'),
-              dense: true,
-              onTap: () {
-                saveDomain('192.168.1.150:8080');
-                savePath('/joborder/');
-              },
-            ),
-          ],
+    return ModalProgressHUD(
+      key: _scaffoldKey,
+      inAsyncCall: _rotating,
+      child: Scaffold(
+        appBar: AppBar(title: Text('Settings'),),
+        body: Container(
+          child: ListView(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.domain),
+                title: Text('Domain'),
+                subtitle: Text(domainController.text),
+                dense: true,
+                onTap: () {
+                  domainDialog(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.directions),
+                title: Text('Path'),
+                subtitle: Text(pathController.text),
+                dense: true,
+                onTap: () {
+                  pathDialog(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.drafts),
+                title: Text('Set Defaults'),
+                subtitle: Text('Set Defaults'),
+                dense: true,
+                onTap: () {
+                  saveDomain('192.168.1.150:8080');
+                  savePath('/joborder/');
+                },
+              ),
+
+              //  uncomment if released to production
+              /*ListTile(
+                leading: Icon(Icons.send),
+                title: Text('Attendance'),
+                subtitle: Text('Attendance'),
+                dense: true,
+                onTap: () {
+                  sendAttendance({'emp_badge': '4208589316'}).then((result) {
+                    showDialog<void>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          content: Text(result, style: TextStyle(color: Colors.black54),),
+                          actions: <Widget>[
+                            FlatButton(
+                              child: new Text('Close'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  });
+                },
+              ),*/
+
+            ],
+          ),
         ),
       ),
     );
@@ -165,5 +205,37 @@ class SettingsState extends State<SettingsScreen> {
     setState(() {
       this.pathController.text = thisPath;
     });
+  }
+
+  Future<String> sendAttendance(var params) async {
+    setState(() { _rotating = true; });
+
+    //String domain = '192.168.1.150:8080';
+    String domain = '122.3.176.235:1959';
+    String path = '/attendance/api/';
+
+    try {
+
+      final uri = new Uri.http(domain, path+'Attendance', params,);
+      var response = await http.post(uri, headers: {'Accept':'application/json'})
+          .timeout(const Duration(seconds: 30),);
+
+      if (response == null) {
+        return '{"success": false, "reason": "The server took long to respond."}';
+      } else if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        return '{"success": false, "reason": "Login failed."}';
+      }
+
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
+    } catch (e) {
+      return '{"success": false, "reason": "Cannot login at this time."}';
+    } finally {
+      setState(() { _rotating = false; });
+    }
   }
 }
