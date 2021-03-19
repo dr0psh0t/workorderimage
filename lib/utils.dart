@@ -3,6 +3,19 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Utils {
+
+  /*static String north = '192.168.1.150:8080';
+  static String central = '122.52.48.202:3316';
+  static String south = '122.52.155.109:1116';
+  static String bohol = '58.69.126.27:3316';*/
+
+  static Map<String, String> domainMaps = {
+    'North': '192.168.1.150:8080',
+    'Central': '122.52.48.202:3316',
+    'South': '122.52.155.109:1116',
+    'Bohol': '58.69.126.27:3316',
+  };
+
   static String correctSuccess(String jsonStr) {
     int start = jsonStr.indexOf('success');
     int end = jsonStr.lastIndexOf('s:')+1;

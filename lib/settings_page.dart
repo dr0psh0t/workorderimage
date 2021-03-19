@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:workorderimage/utils.dart';
 
 class SettingsScreen extends StatefulWidget {
   @override
@@ -15,8 +16,15 @@ class SettingsState extends State<SettingsScreen> {
   bool _rotating = false;
   final _scaffoldKey =GlobalKey<ScaffoldState>();
 
+  TextEditingController domainController = TextEditingController();
+  TextEditingController pathController = TextEditingController();
+  TextEditingController attendDomain = TextEditingController();
+  TextEditingController attendPath = TextEditingController();
+
+  SharedPreferences prefs;
+
   @override
-  void initState() {
+  void initState() async {
     super.initState();
     initUrl();
   }
@@ -61,33 +69,90 @@ class SettingsState extends State<SettingsScreen> {
               ),
 
               //  uncomment if released to production
-              /*ListTile(
-                leading: Icon(Icons.send),
+              ListTile(
+                leading: Icon(Icons.verified_user, color: Colors.black54,),
+                trailing: IconButton(
+                  icon: Icon(Icons.send, color: Colors.black54,),
+                  onPressed: () {
+                    if (attendDomain.text.isNotEmpty && attendPath.text.isNotEmpty) {
+                      sendAttendance({'emp_badge': '4208589316'}).then((result) {
+                        showDialog<void>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Text(result, style: TextStyle(color: Colors.black54),),
+                              actions: <Widget>[
+                                IconButton(
+                                  icon: Icon(Icons.close, color: Colors.black54,),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      });
+
+                    } else {
+                      Utils.toast('Attendance address is empty');
+                    }
+                  },
+                ),
                 title: Text('Attendance'),
-                subtitle: Text('Attendance'),
+                subtitle: Text(attendDomain.text+attendPath.text),
                 dense: true,
                 onTap: () {
-                  sendAttendance({'emp_badge': '4208589316'}).then((result) {
-                    showDialog<void>(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          content: Text(result, style: TextStyle(color: Colors.black54),),
-                          actions: <Widget>[
-                            FlatButton(
-                              child: new Text('Close'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
+
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: Text('Attendance Address'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            TextField(
+                              controller: attendDomain,
+                              keyboardType: TextInputType.text,
+                              inputFormatters: [WhitelistingTextInputFormatter(RegExp("[^\\s+]")),],
+                              decoration: InputDecoration(hintText: "Attend Domain here"),
+                            ),
+                            TextField(
+                              controller: attendPath,
+                              keyboardType: TextInputType.text,
+                              inputFormatters: [WhitelistingTextInputFormatter(RegExp("[^\\s+]")),],
+                              decoration: InputDecoration(hintText: "Attend Path here"),
                             ),
                           ],
-                        );
-                      },
-                    );
-                  });
+                        ),
+                        actions: <Widget>[
+                          IconButton(
+                            icon: Icon(Icons.check_circle, color: Colors.black54,),
+                            onPressed: () {
+
+                              if (attendDomain.text.isNotEmpty && attendPath.text.isNotEmpty) {
+                                saveAttendDomain(attendDomain.text, attendPath.text);
+                                Navigator.of(context).pop();
+                              } else {
+                                Utils.toast('Fill all fields');
+                              }
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.close, color: Colors.black54,),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    }
+                  );
+
                 },
-              ),*/
+              ),
 
             ],
           ),
@@ -95,9 +160,6 @@ class SettingsState extends State<SettingsScreen> {
       ),
     );
   }
-
-  TextEditingController domainController = TextEditingController();
-  TextEditingController pathController = TextEditingController();
 
   domainDialog(BuildContext context) async {
     return showDialog(
@@ -184,15 +246,26 @@ class SettingsState extends State<SettingsScreen> {
   }
 
   initUrl() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     setState(() {
       this.domainController.text = prefs.getString('domain');
       this.pathController.text = prefs.getString('path');
+      this.attendDomain.text = prefs.getString('attendanceDomain');
+      this.attendPath.text = prefs.getString('attendancePath');
+    });
+  }
+
+  saveAttendDomain(String domain, String path) async {
+    await prefs.setString("attendanceDomain", domain);
+    await prefs.setString("attendancePath", path);
+
+    setState(() {
+      this.attendDomain.text = domain;
+      this.attendPath.text = path;
     });
   }
 
   saveDomain(String domain) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("domain", domain);
     setState(() {
       this.domainController.text = domain;
@@ -200,7 +273,6 @@ class SettingsState extends State<SettingsScreen> {
   }
 
   savePath(String thisPath) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("path", thisPath);
     setState(() {
       this.pathController.text = thisPath;
@@ -210,13 +282,9 @@ class SettingsState extends State<SettingsScreen> {
   Future<String> sendAttendance(var params) async {
     setState(() { _rotating = true; });
 
-    //String domain = '192.168.1.150:8080';
-    String domain = '122.3.176.235:1959';
-    String path = '/attendance/api/';
-
     try {
 
-      final uri = new Uri.http(domain, path+'Attendance', params,);
+      final uri = new Uri.http(attendDomain.text, attendPath.text, params,);
       var response = await http.post(uri, headers: {'Accept':'application/json'})
           .timeout(const Duration(seconds: 30),);
 

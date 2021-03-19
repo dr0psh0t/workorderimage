@@ -35,15 +35,26 @@ class LoginPageState extends State<LoginPage> {
   bool _remember = false;
 
   final _scaffoldKey =GlobalKey<ScaffoldState>();
-
   final controllerUsername =TextEditingController();
   final controllerPassword =TextEditingController();
   final _settingsController = TextEditingController();
 
+  String hint = 'Plant';
+  SharedPreferences prefs;
+
   void showPrefs() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     controllerUsername.text =prefs.getString('username');
     controllerPassword.text =prefs.getString('password');
+
+    String domain = prefs.getString('domain');
+
+    var domMap = Utils.domainMaps;
+    var key = domMap.keys.firstWhere((k) => domMap[k] == domain, orElse: () => 'Plant');
+
+    setState(() {
+      hint = key;
+    });
   }
 
   @override
@@ -105,7 +116,7 @@ class LoginPageState extends State<LoginPage> {
             ],
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 30.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
             child: TextField(
               onChanged: (value) {},
               controller: controllerUsername,
@@ -122,7 +133,7 @@ class LoginPageState extends State<LoginPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 15.0),
             child: TextField(
               onChanged: (value) {},
               controller: controllerPassword,
@@ -141,6 +152,25 @@ class LoginPageState extends State<LoginPage> {
                 ),
               ),
               style: TextStyle(color: Colors.black54),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
+            child: DropdownButton<String>(
+              items: <String>['North', 'Central', 'South', 'Bohol'].map((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              hint: Text(hint),
+              onChanged: (newVal) {
+                setState(() {
+                  hint = newVal;
+                });
+
+                saveDomain(Utils.domainMaps[newVal]);
+              },
             ),
           ),
           Container(
@@ -192,7 +222,7 @@ class LoginPageState extends State<LoginPage> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.only(left: 1.0, right: 1.0, top: 10.0),
+            padding: const EdgeInsets.only(left: 1.0, right: 1.0, top: 0.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -313,19 +343,19 @@ class LoginPageState extends State<LoginPage> {
   }
 
   unsaveAccount() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('password', '');
   }
 
   saveCredentials(String username, String password) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("username", username);
     await prefs.setString("password", password);
   }
 
   saveSession(String sessionId) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString("sessionId", sessionId);
-    //print(sessionId);
+  }
+
+  saveDomain(String domain) async {
+    await prefs.setString("domain", domain);
   }
 }
