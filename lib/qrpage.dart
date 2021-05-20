@@ -29,6 +29,9 @@ class QrState extends State<QrPage> {
   @override
   void initState() {
     super.initState();
+
+    //  comment this assignment if you're going to deploy to ER or MF
+    typeControl.text = 'MF';
   }
 
   void setQrCode(code) {
@@ -118,7 +121,9 @@ class QrState extends State<QrPage> {
           Padding(
             padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
             child: TextField(
-              onTap: () {
+
+              //  uncomment onTap if you're going deploy to ER or MF
+              /*onTap: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -187,7 +192,7 @@ class QrState extends State<QrPage> {
                     );
                   }
                 );
-              },
+              },*/
               onChanged: (value) {},
               controller: typeControl,
               keyboardType: TextInputType.text,
@@ -271,6 +276,8 @@ class QrState extends State<QrPage> {
 
     try {
       final uri = new Uri.http(domain, path+'InitScanWorkOrderQr', params,);
+      print(uri.toString());
+      print(params);
 
       var response = await http.post(uri, headers: {
         'Accept': 'application/json',
@@ -280,6 +287,8 @@ class QrState extends State<QrPage> {
       if (response == null) {
         showSnackbar('Unable to create response object. Cause: null.', 'OK', false);
       } else if (response.statusCode == 200) {
+
+        print(response.body);
         var result = json.decode(response.body);
         String msg = result['reason'];
 

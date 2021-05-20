@@ -58,7 +58,7 @@ class JobordersState extends State<JobordersPage> {
                     searchJo(value);
                   },
                   controller: searchController,
-                  keyboardType: TextInputType.number,
+                  keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     labelText: 'Search JO',
                     hintText: 'Search JO',
@@ -356,6 +356,7 @@ class JobordersState extends State<JobordersPage> {
     if (searchText.length > 2) {
 
       search({'q': searchText, 'type': 'joid',}).then((result) {
+
         var map = json.decode(result.replaceAll("\n", "").trim());
 
         if (map['success']) {

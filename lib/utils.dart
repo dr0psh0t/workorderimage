@@ -11,6 +11,7 @@ class Utils {
 
   static Map<String, String> domainMaps = {
     'North': '192.168.1.150:8080',
+    //'North': '122.3.176.235:1959',
     'Central': '122.52.48.202:3316',
     'South': '122.52.155.109:1116',
     'Bohol': '58.69.126.27:3316',
