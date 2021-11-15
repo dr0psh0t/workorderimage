@@ -55,6 +55,46 @@ class LoginPageState extends State<LoginPage> {
     setState(() {
       hint = key;
     });
+
+    checkConnection(domain).then((result) {
+      var map = json.decode(result);
+      Utils.toast(map['reason']);
+    });
+  }
+
+  Future<String> checkConnection(String domain) async {
+    setState(() { _saving = true; });
+
+    if (domain == null) {
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    if (domain.isEmpty) {
+      return '{"success": false, "reason": "Server address error."}';
+    }
+
+    try {
+      final uri = new Uri.http(domain, '/joborder/Authenticate',);
+      var response = await http.post(uri, headers: {'Accept':'application/json'})
+          .timeout(const Duration(seconds: 10),);
+
+      if (response == null) {
+        return '{"success": false, "reason": "The server took long to respond."}';
+      } else if (response.statusCode == 200) {
+        return '{"success": true, "reason": "You are connected."}';
+      } else {
+        return '{"success": false, "reason": "Connection Failure"}';
+      }
+    } on SocketException {
+      return '{"success": false, "reason": "Failed to connect to the server."}';
+    } on TimeoutException {
+      return '{"success": false, "reason": "The server took long to respond."}';
+    } catch (e) {
+      //print(e.toString());
+      return '{"success": false, "reason": "Cannot login at this time."}';
+    } finally {
+      setState(() { _saving = false; });
+    }
   }
 
   @override
@@ -165,8 +205,11 @@ class LoginPageState extends State<LoginPage> {
               }).toList(),
               hint: Text(hint),
               onChanged: (newVal) {
-                setState(() {
-                  hint = newVal;
+                setState(() { hint = newVal; });
+
+                checkConnection(Utils.domainMaps[newVal]).then((result) {
+                  var map = json.decode(result);
+                  Utils.toast(map['reason']+' to '+newVal);
                 });
 
                 saveDomain(Utils.domainMaps[newVal]);

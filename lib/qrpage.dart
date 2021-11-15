@@ -54,7 +54,8 @@ class QrState extends State<QrPage> {
 
                 sendQr({
                   'qr': qrControl.text,
-                  'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
+                  //'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',  //  joborder
+                  'akey': '5ObFn9sE1Nd72EqUK1lezSCSAsOeRWHYcTqGZ5TwkzgIGncJgHBIt0kubFIMNPH',  //  dhijo
                   'source': 'mcsa',
                   'type': typeControl.text,
                   'joNum': joControl.text,
@@ -247,7 +248,8 @@ class QrState extends State<QrPage> {
 
                         sendQr({
                           'qr': qrControl.text,
-                          'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
+                          //'akey': 'vQiC8BkrspwPKMhsKdlIwtytU5ca1LoHs3e05x4nAzEFPCAwYJtWCobMqUiC0NP',
+                          'akey': '5ObFn9sE1Nd72EqUK1lezSCSAsOeRWHYcTqGZ5TwkzgIGncJgHBIt0kubFIMNPH',
                           'source': 'mcsa',
                           'type': typeControl.text,
                           'joNum': joControl.text,
